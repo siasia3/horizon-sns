@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+    <div layout:decorate="layout.html">
+        <main layout:fragment="content" id="chatMain">
+            <div class="chat-container">
+                <div class="chat-header">
+
+                    <div class="receiverInfo" id="receiverInfo">
+                        <div class="profile-div">
+                            <img src="/image/basicProfile.jpg" class="receiver-img">
+                        </div>
+                        <span class="receiverName customBoldFont">냠냠냠</span>
+                    </div>
+
+                </div>
+
+                <div class="chat-messages" id="chatArea">
+                </div>
+                <template id="chatTimeTemplate">
+                    <div class="time-div">
+                        <div class="chatTime" id="timeArea">
+                            2025. 5. 3. 오후 10:14
+                        </div>
+                    </div>
+                </template>
+                <template id="receiverMessage">
+                    <div class="receiver-message-div">
+                        <div class="profile-div">
+                            <img src="/image/basicProfile.jpg" class="receiver-img">
+                        </div>
+                        <div class="receiver-message message">
+                            상대 메시지
+                        </div>
+                    </div>
+                </template>
+                <template id="senderMessage">
+                    <div class="sender-message-div">
+                        <div class="sender-message message">
+                            내 메시지
+                        </div>
+                    </div>
+                </template>
+
+
+                <div class="message-input-area">
+                    <div class="message-input-inner">
+                        <input id="messageInput" type="text" placeholder=" 메시지를 입력하세요..." />
+                        <div id="messagePostBtn" class="messagePostBtn customBoldFont">Send</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <th:block layout:fragment="script">
+        <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+        <script src="/js/userDetail.js" defer></script>
+        <script src="/js/chat.js" defer></script>
+
+        <script>
+            const path = window.location.pathname;
+            const nickname = path.split('/')[2];
+            const senderId = sessionStorage.getItem("userId");
+            let receiverId;
+            let chatroomId = '[[${chatroomId}]]';
+
+
+            window.addEventListener("load",function (){
+                getReceiverInfo(nickname).then( receiverData => {
+                    receiverId = receiverData.memberId;
+                    renderReceiverInfo(receiverData);
+                });
+
+                getChats(chatroomId).then(chats => {
+                    chats.forEach(chat => {
+                        renderChat(chat);
+                    });
+                });
+                connect(chatroomId);
+            });
+
+            document.getElementById('messagePostBtn').addEventListener('click',function (){
+                let chatContent = document.getElementById('messageInput').value;
+                if (chatContent.trim() !== "") {
+                    let message = JSON.stringify({
+                        type: "TALK",
+                        chatRoomId: chatroomId,
+                        senderId: senderId,
+                        message: chatContent
+                    })
+                    sendMessage(message); // 메시지 전송 함수 호출
+                    document.getElementById('messageInput').value = "";
+                }
+            });
+
+            document.getElementById("messageInput").addEventListener("keydown", function (event) {
+                // Enter 키 (key code: 13 또는 event.key === 'Enter')
+                if (event.key === "Enter" && !event.shift && this.value.trim() !== "") {
+                    event.preventDefault(); // 줄바꿈 방지
+                    let chatContent = this.value;
+                    let message = JSON.stringify({
+                        type: "TALK",
+                        chatRoomId: chatroomId,
+                        senderId: senderId,
+                        message: chatContent
+                    })
+                    sendMessage(message); // 메시지 전송 함수 호출
+                    document.getElementById('messageInput').value = "";
+
+                }
+            });
+
+            //페이지 벗어나면 disconnect()
+            window.addEventListener("beforeunload", function () {
+                if (stompClient && stompClient.connected) {
+                    stompClient.disconnect(() => {
+                    });
+                }
+            });
+
+
+        </script>
+    </th:block>
+</body>
+</html>

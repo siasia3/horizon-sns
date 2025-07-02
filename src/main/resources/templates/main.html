@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+<div layout:decorate="layout.html">
+    <main layout:fragment="content">
+        <div id="mainDiv">
+            <div id="mainDiv-inner">
+                <template id="multi-file-template">
+                    <div class="post" data-post-id="777">
+                        <div class="postInfo">
+                            <div class="profile-div">
+                                <img src="image/basicProfile.jpg" class="profile-img">
+                            </div>
+                            <span class="authorInfo customBoldFont">김래홍 1일</span>
+                        </div>
+                        <div id="carouselIndicators1" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                <button type="button" data-bs-target="#carouselIndicators1" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                                <button type="button" data-bs-target="#carouselIndicators1" data-bs-slide-to="1"></button>
+                            </div>
+                            <div class="carousel-inner postCarouselItem">
+                                <div class="carousel-item img-container">
+                                    <img src="image/bear.png" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item video-container">
+                                    <video class="d-block w-100" controls>
+                                        <source src="image/240330_small.mp4" type="video/mp4">
+                                    </video>
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators1" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators1" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        <div class="postDiv">
+                            <span class="fa-regular fa-heart"></span>
+                            <span class="fa-regular fa-comment detailOpen"></span>
+                        </div>
+                        <div class="postDiv customBoldFont">
+                            <div>좋아요 <span class="heartCount">0</span>개</div>
+                        </div>
+                        <div class="postDiv post-content">
+                            <div class="post-text customFont">
+                            </div>
+                            <div class="more-text" style="display: none;">
+                                <span class="show-more-btn">더보기</span>
+                            </div>
+                        </div>
+                        <div class="postDiv">
+                            <div class="commentCount detailOpen">댓글 <span class="commentCntText">0</span>개 모두 보기</div>
+                        </div>
+                        <div class="comment-items">
+                        </div>
+                        <div class="postDiv commentDiv">
+                            <input class="comment-content" type="text" placeholder="댓글을 입력하세요..." />
+                            <div class="commentPostBtn customBoldFont" style="display: none;">게시</div>
+                        </div>
+                        <div class="divider"></div>
+                    </div>
+                </template>
+                <template id="comment-template">
+                    <div class="comment-item">
+                        <span class="comment-nickName customBoldFont"></span>
+                        <span class="comment-content-preview"></span>
+                    </div>
+                </template>
+                <template id="single-file-template">
+                    <div class="post" data-post-id="777">
+                        <div class="postInfo">
+                            <div class="profile-div">
+                                <img src="image/basicProfile.jpg" class="profile-img">
+                            </div>
+                            <span class="authorInfo customBoldFont">김래홍 1일</span>
+                        </div>
+                        <div class="mediaDiv">
+                            <div class="img-container">
+                                <img src="image/bear.png" class="d-block w-100" alt="...">
+                            </div>
+                            <div class="video-container">
+                                <video class="d-block w-100" controls>
+                                    <source src="image/240330_small.mp4" type="video/mp4">
+                                </video>
+                            </div>
+                        </div>
+                        <div class="postDiv">
+                            <span class="fa-regular fa-heart"></span>
+                            <span class="fa-regular fa-comment detailOpen"></span>
+                        </div>
+                        <div class="postDiv customBoldFont">
+                            <div>좋아요 <span class="heartCount">0</span>개</div>
+                        </div>
+                        <div class="postDiv post-content">
+                            <div class="post-text customFont">
+                            </div>
+                            <div class="more-text">
+                                <span class="show-more-btn" style="display: none;">더보기</span>
+                            </div>
+                        </div>
+                        <div class="postDiv">
+                            <div class="commentCount detailOpen">댓글 <span class="commentCntText">0</span>개 모두 보기</div>
+                        </div>
+                        <div class="comment-items">
+                        </div>
+                        <div class="postDiv commentDiv">
+                            <input class="comment-content" type="text" placeholder="댓글을 입력하세요..." />
+                            <div class="commentPostBtn customBoldFont" style="display: none;">게시</div>
+                        </div>
+
+                        <div class="divider"></div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/postDetailModal :: postDetailModal}"></div>
+
+
+    </main>
+</div>
+<th:block layout:fragment="script">
+
+
+    <script src="/js/comment.js" defer></script>
+    <script src="/js/like.js" defer></script>
+    <script src="/js/reply.js" defer></script>
+
+    <script>
+        window.addEventListener("load", async function (){
+            pagingPosts();
+        });
+
+        // 스크롤 시 post 페이징 API 호출
+        window.addEventListener("scroll", () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                pagingPosts();
+            }
+        });
+
+        //게시글 목록 좋아요 클릭이벤트
+        document.getElementById('mainDiv-inner').addEventListener('click', async (event) => {
+
+            if (event.target && event.target.classList.contains('fa-heart')) {
+                const targetPost = event.target.closest('.post');
+                if (event.target.classList.contains('fa-regular')) {
+                    let heartIcon = targetPost.querySelector('.fa-heart');
+                    let likeId = await likeIncreaseAPI(targetPost);
+                    if (likeId) {
+                        likeIncreaseRender(targetPost, heartIcon, likeId);
+                    }
+                    return;
+                }
+
+                if (event.target.classList.contains('fa-solid')) {
+                    let heartIcon = event.target;
+                    let likeId = await likeDecreaseAPI(heartIcon);
+                    if (likeId) {
+                        likeDecreaseRender(targetPost, heartIcon);
+                    }
+                }
+
+            }
+        });
+
+        document.getElementById('mainDiv-inner').addEventListener('click', async(event) => {
+            //게시글 더보기
+            if (event.target && event.target.classList.contains('show-more-btn')) {
+                let postContent = event.target.closest('.post-content');
+                postContent.classList.toggle('show-more');
+                event.target.remove();
+            }
+
+            // 댓글 등록
+            if (event.target && event.target.classList.contains('commentPostBtn')){
+                const targetPost = event.target.closest('.post');
+                let commentContent = targetPost.querySelector('.comment-content').value;
+                let postId = targetPost.getAttribute('data-post-id');
+                let data = {
+                    postId: postId,
+                    commentContent: commentContent
+                }
+
+                let responseData = createComment(data);
+                const cloneComment = document.getElementById('comment-template').content.cloneNode(true);
+                cloneComment.querySelector('.comment-nickName').textContent = responseData.commentAuthor;
+                cloneComment.querySelector('.comment-content-preview').textContent = responseData.commentContent;
+                targetPost.querySelector('.comment-items').appendChild(cloneComment);
+                let commentCnt = targetPost.querySelector('.commentCntText').textContent;
+                targetPost.querySelector('.commentCntText').textContent = parseInt(commentCnt)+1;
+                targetPost.querySelector('.comment-content').value = '';
+                alert('댓글이 성공적으로 업로드되었습니다.');
+
+            }
+        });
+        document.getElementById('mainDiv-inner').addEventListener('input', function (event){
+            //댓글 게시버튼 활성화
+            if(event.target && event.target.classList.contains('comment-content')){
+                let commentPostBtn = event.target.nextElementSibling;
+                if (event.target.value.trim() !== "") {
+                    commentPostBtn.style.display = 'block';
+                } else {
+                    commentPostBtn.style.display = 'none'; // 버튼 비활성화
+                }
+            }
+        });
+        //게시글 세부사항 클릭 이벤트
+        document.getElementById('mainDiv-inner').addEventListener('click', function (event){
+            //댓글 게시버튼 활성화
+            if(event.target && event.target.classList.contains('detailOpen')){
+                let postId = event.target.closest('.post').getAttribute('data-post-id');
+                getPostDetail(postId).then(postResponse => renderPostDetail(postResponse));
+                getComments(postId,15,0).then(commentResponse => renderCommentElements(commentResponse));
+                /*Promise.all([getPostDetail(postId), getComments(postId,15,0)]).then(
+                    ([response1,response2]) => {
+                        renderPostDetail(response1);
+                        renderCommentElements(response2);
+                    });*/
+                document.getElementById('postDetailModal').classList.add('show');
+
+            }
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

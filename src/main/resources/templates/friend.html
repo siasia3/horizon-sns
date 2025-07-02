@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+<div layout:decorate="layout.html">
+    <main layout:fragment="content" id="friendMain">
+        <div class="friendRequestMain">
+            <div class="friendRequestTitle">
+                <span class="customLargeBoldFont">친구 요청</span>
+            </div>
+
+            <div class="tab-buttons">
+                <button onclick="showTab('received')">받은 친구 요청</button>
+                <button onclick="showTab('sent')">보낸 친구 요청</button>
+            </div>
+
+            <div id="received" class="tab-content">
+                <div class="friendRequestArea">
+                    <template id="friendRequest-template">
+                        <div class="friendReq">
+                            <div class="friendProfile">
+                                <img src="/image/basicProfile.jpg">
+                                <span class="customBoldFont custom-m-4">냠냠냠</span>
+                            </div>
+                            <div class="friendReqBtn">
+                                <button class="btn btn-primary custom-m-4">수락</button>
+                                <button class="btn btn-outline-secondary custom-m-4">거절</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div id="sent" class="tab-content" style="display: none;">
+                <p>여기에 보낸 친구 요청 목록을 표시합니다.</p>
+            </div>
+
+
+
+
+
+            <!--<div class="friendRequestArea">
+                <div class="friendReq">
+                    <div class="friendProfile">
+                        <img src="/image/basicProfile.jpg">
+                        <span class="customBoldFont custom-m-4">냠냠냠</span>
+                    </div>
+                    <div class="friendReqBtn">
+                        <button class="btn btn-primary custom-m-4">수락</button>
+                        <button class="btn btn-outline-secondary custom-m-4">거절</button>
+                    </div>
+                </div>
+                <div class="friendReq">
+                    <div class="friendProfile">
+                        <img src="/image/basicProfile.jpg">
+                        <span class="customBoldFont custom-m-4">냠냠냠</span>
+                    </div>
+                    <div class="friendReqBtn">
+                        <button class="btn btn-primary custom-m-4">수락</button>
+                        <button class="btn btn-outline-secondary custom-m-4">거절</button>
+                    </div>
+                </div>
+                <div class="friendReq">
+                    <div class="friendProfile">
+                        <img src="/image/basicProfile.jpg">
+                        <span class="customBoldFont custom-m-4">냠냠냠</span>
+                    </div>
+                    <div class="friendReqBtn">
+                        <button class="btn btn-primary custom-m-4">수락</button>
+                        <button class="btn btn-outline-secondary custom-m-4">거절</button>
+                    </div>
+                </div>
+                <div class="friendReq">
+                    <div class="friendProfile">
+                        <img src="/image/basicProfile.jpg">
+                        <span class="customBoldFont custom-m-4">냠냠냠</span>
+                    </div>
+                    <div class="friendReqBtn">
+                        <button class="btn btn-primary custom-m-4">수락</button>
+                        <button class="btn btn-outline-secondary custom-m-4">거절</button>
+                    </div>
+                </div>
+                <div class="friendReq">
+                    <div class="friendProfile">
+                        <img class="friendReqProfile" src="/image/basicProfile.jpg">
+                        <span class="customBoldFont custom-m-4 friendReqName">냠냠냠</span>
+                    </div>
+                    <div class="friendReqBtn">
+                        <button class="btn btn-primary custom-m-4">수락</button>
+                        <button class="btn btn-outline-secondary custom-m-4">거절</button>
+                    </div>
+                </div>
+                <div class="friendReq">
+                    <div class="friendProfile">
+                        <img src="/image/basicProfile.jpg">
+                        <span class="customBoldFont custom-m-4">냠냠냠</span>
+                    </div>
+                    <div class="friendReqBtn">
+                        <button class="btn btn-primary custom-m-4">수락</button>
+                        <button class="btn btn-outline-secondary custom-m-4">거절</button>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </main>
+</div>
+<th:block layout:fragment="script">
+    <script>
+        function showTab(tabId) {
+        // 모든 탭 숨김
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+
+        // 선택된 탭만 표시
+        document.getElementById(tabId).style.display = 'block';
+        }
+    </script>
+</th:block>
+</body>
+</html>

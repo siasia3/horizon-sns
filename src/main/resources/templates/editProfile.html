@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+    <div layout:decorate="layout.html">
+        <main layout:fragment="content" id="profileEditer">
+            <div class="profile-edit-container">
+                <div class="profile-edit-title">
+                    <span>프로필 편집</span>
+                </div>
+                <form id="profileForm" enctype="multipart/form-data">
+                    <!-- 프로필 사진 -->
+                    <div id="profile-image-area">
+                        <input type="text" id="myId" name="memberId" style="display: none;"/>
+                        <div style="width: 20%">
+                            <img id="profileImagePreview" class="my-profile-img" src="/image/basicProfile.jpg" alt="프로필 사진">
+                        </div>
+                        <div class="customLargeBoldFont" id="myName">김래홍</div>
+                        <div class="image-change-div">
+                            <div class="custom-btn" id="customFileTrigger">사진 변경</div>
+                        </div>
+                        <input type="file" id="profileFile" name="memberProfileFile" style="display: none;" />
+                    </div>
+
+                    <!-- 닉네임 -->
+                    <div>
+                        <label class="edit-label">닉네임</label>
+                        <div class="nickname-area">
+                            <div style="width: 80%">
+                                <input class="edit-input" type="text" id="nickname" name="nickname" maxlength="20" required>
+                            </div>
+                            <div class="nickname-duplicate-check">
+                                <div class="custom-btn duplicate-btn" id="duplicate">중복 확인</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 0.4rem;">
+                            <span id="duplicateMessage" style="display: none;">중복된 닉네임입니다.</span>
+                        </div>
+                    </div>
+
+                    <!-- 생일 -->
+                    <div>
+                        <label class="edit-label">생일</label>
+                        <input class="edit-input" type="date" id="birthdate" name="birthdate" max="2011-12-31">
+                    </div>
+
+                    <!-- 성별 -->
+                    <div>
+                        <label class="edit-label">성별</label>
+                        <select id="gender" name="gender" class="edit-input">
+                            <option value="">선택</option>
+                            <option value="MALE">남성</option>
+                            <option value="FEMALE">여성</option>
+                        </select>
+                    </div>
+
+                    <!-- 저장 버튼 -->
+                    <button id="editSubmit" type="submit">저장하기</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <th:block layout:fragment="script">
+        <script>
+            let DuplicateCheckState = true; //아직 중복체크 안한 상태
+
+
+            window.addEventListener("load", async function (){
+                //회원 프로필 정보 api 조회 및 렌더링
+                let memberProfileInfo = await getMemberProfileEditInfo();
+                memberProfileRender(memberProfileInfo);
+            });
+
+            //파일선택 클릭
+            document.getElementById('customFileTrigger').addEventListener('click', function () {
+                document.getElementById('profileFile').click(); // 파일 선택창 열기
+            });
+
+            //닉네임 변경시 중복체크 상태 변경
+            document.getElementById('nickname').addEventListener('input', function () {
+                DuplicateCheckState = null;
+            });
+
+
+
+            //파일 선택시 미리보기
+            document.getElementById('profileFile').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if(file.name.length > 100){
+                        alert("파일명이 너무 깁니다.");
+                        return;
+                    }
+                    const preview = document.getElementById('profileImagePreview');
+                    const url = URL.createObjectURL(file);
+                    preview.src = url;
+
+                    // 나중에 메모리 해제 권장
+                    preview.onload = () => URL.revokeObjectURL(url);
+                }
+            });
+
+            //닉네임 중복체크 버튼
+            document.getElementById('duplicate').addEventListener('click',async function(){
+                let newNickname = document.getElementById('nickname').value;
+                let previousNickname = sessionStorage.getItem('nickname');
+                let duplicateMessage = document.getElementById('duplicateMessage');
+                if(newNickname == previousNickname){
+                    duplicateMessage.textContent = '닉네임을 변경한 후 클릭해주세요';
+                    duplicateMessage.style.display = 'block';
+                    duplicateMessage.style.color = 'black';
+                    return;
+                }
+
+                let checkDuplicate = await checkNicknameDuplicated(newNickname);
+
+                if(checkDuplicate.state){
+                    //중복되지 않은 상태
+                    DuplicateCheckState = true;
+                    duplicateMessage.textContent = checkDuplicate.message;
+                    duplicateMessage.style.display = 'block';
+                    duplicateMessage.style.color = 'yellowgreen';
+
+                }
+                if(!checkDuplicate.state){
+                    //중복되거나 서버 오류
+                    DuplicateCheckState = false;
+                    duplicateMessage.textContent = checkDuplicate.message;
+                    duplicateMessage.style.display = 'block';
+                    duplicateMessage.style.color = 'red';
+                }
+            });
+
+            document.querySelector("form").addEventListener("submit", async function (event) {
+                event.preventDefault(); // 기본 submit 동작 막기
+                if(DuplicateCheckState===null){
+                    alert("닉네임 중복확인을 해주세요.");
+                    return;
+                }
+                if(DuplicateCheckState===false){
+                    alert("중복된 닉네임입니다. ");
+                    return;
+                }
+
+                let profileForm = document.getElementById('profileForm');
+                let formData = new FormData(profileForm);
+
+                let response = await editMemberProfile(formData);
+                if(response){
+                    if(response.memberProfilePath){
+                        sessionStorage.setItem('profileImage',response.memberProfilePath);
+                    }
+                    if(response.nickname){
+                        sessionStorage.setItem('nickname',response.nickname);
+                    }
+                    let nickname = sessionStorage.getItem('nickname');
+                    alert("정상적으로 수정되었습니다.");
+                    window.location.href = `${BASE_URL}/user/${nickname}`;
+                }
+            });
+
+
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+    <div layout:decorate="layout.html">
+        <main layout:fragment="content">
+            <div id="userDiv" class="w-100">
+                <div id="userDiv-inner" class="w-100">
+                    <div class="rowDiv profileArea">
+                        <div style="width: 45%; display: flex; justify-content: flex-end;">
+                            <img class="memberProfile" src="/image/basicProfile.jpg" style="margin-right: 3.5rem;">
+                        </div>
+                        <div id="userInfo" style="width: 55%; padding-top: 20px;" data-member-id="">
+                            <div class="rowDiv alignCenter small-pb-custom">
+                                <div class="large-pr-custom customLargeBoldFont profileName">냠냠냠</div>
+                                <div class="profileBtn">
+                                    <div class="myProfileBtn" style="display: none;">
+                                        <div class="custom-btn large-mr-custom profileEdit" id="profileEdit">프로필 편집</div>
+                                    </div>
+                                    <div class="userProfileBtn" id="friendReq-btns" style="display: none;" data-friendReq-id="">
+                                        <div class="custom-btn large-mr-custom" id="friendRequest-btn" style="display: none">친구 요청</div>
+                                        <div class="custom-btn large-mr-custom" id="friend-btn" style="display: none">친구</div>
+                                        <div class="custom-btn large-mr-custom" id="friendRequest-btn-cancel" style="display: none">요청 취소</div>
+                                        <div class="custom-btn large-mr-custom" id="friendRequestIng-btn" style="display: none">요청 확인</div>
+                                        <div class="custom-btn" id="DMBtn">메시지 보내기</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rowDiv">
+                                <div class="small-pr-custom" style="padding-right: 25px;">게시물 <span class="customLargeBoldFont postCnt">1</span></div>
+                                <div>친구 <span class="customLargeBoldFont friendCnt">0</span></div>
+                            </div>
+                            <div class="friendRequestIng" id="friendRequestIng" style="display: none">
+                                <div class="customBoldFont"><span id="friendName">테스트</span>님이 친구요청을 보냈습니다</div>
+                                <div class="friendRequestBtnArea">
+                                    <div class="custom-btn large-mr-custom" id="friendRequest-btn-accept">요청 수락</div>
+                                    <div class="custom-refuse-btn" id="friendRequest-btn-refuse">요청 거절</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dividerContainer">
+                        <div class="profileDivider"></div>
+                    </div>
+                    <div class="userPostArea">
+                        <div class="userPostArea-header small-pb-custom">
+                            <i class="fa-regular fa-clipboard"></i>
+                            <span class="small-pl-custom customBoldFont">게시물</span>
+                        </div>
+                        <div class="userPostArea-content">
+                            <div id="userPostInner" class="userPostArea-inner">
+                                <template id="post-thumbnail-template">
+                                    <div class="memberPost" data-post-id="777">
+                                        <img class="postMedia" src="/image/noImage.png">
+                                        <video class="postMedia" src="/image/240330_small.mp4" muted></video>
+                                        <div class="postOverlay">
+                                            <div>
+                                                <span class="icon">❤</span>
+                                                <span class="count likeCnt">12</span>
+                                                <span class="icon">💬</span>
+                                                <span class="count commentCnt">5</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template id="no-post-template">
+                                    <div id="noPost" style="text-align: center; color: #5f5f5f; margin-top: 20px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 24 24" fill="none">
+                                            <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                            <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                        <p style="margin-top: 8px; font-size: 16px;">게시물이 없습니다</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/postDetailModal :: postDetailModal}"></div>
+        </main>
+    </div>
+<th:block layout:fragment="script">
+    <script src="/js/userDetail.js" defer></script>
+    <script src="/js/comment.js" defer></script>
+    <script src="/js/like.js" defer></script>
+    <script src="/js/reply.js" defer></script>
+    <script src="/js/chat.js" defer></script>
+    <script>
+        let userId;
+        let DMButton = document.getElementById('DMBtn');
+        let myId = sessionStorage.getItem('userId');
+        let nickname;
+
+        /*window.addEventListener("load", () => {
+            const url = window.location.pathname;
+            const nicknameMatch = url.match(/\/user\/([^\/]+)/);
+            const nickname = nicknameMatch[1];
+
+            loadUserInfo(nickname).then(userData => {
+                friendMemId = userData.memberId;
+                renderUserInfo(userData);
+                friendRequestCheck(myId,friendMemId).then(response=>{
+                    renderFriendRequestByUser(response);
+                });
+            });
+            pagingUserPosts(nickname).then(userPost => renderUserPosts(userPost));
+        });*/
+
+        window.addEventListener("load", async () => {
+            const url = window.location.pathname;
+            const nicknameMatch = url.match(/\/user\/([^\/]+)/);
+            nickname = nicknameMatch[1];
+
+            let friends = await getFriends();
+            renderFriendList(friends);
+
+            let userData = await loadUserInfo(nickname);
+            friendMemId = userData.memberId;
+            renderUserInfo(userData);
+            let friendRequestState = await friendRequestCheck(myId,friendMemId)
+            renderFriendRequestByUser(friendRequestState);
+            let userPost = await pagingUserPosts(nickname);
+            renderUserPosts(userPost);
+        });
+
+        if(DMButton){
+            DMButton.addEventListener('click',function (){
+                let nickname = document.querySelector('.profileName').textContent;
+                let receiverId = document.getElementById('userInfo').getAttribute('data-member-id');
+                let chatroomId;
+                getChatroom(myId,receiverId).then(chatroom => {
+                    chatroomId = chatroom.chatroomId;
+                    window.location.href = `/chat/${nickname}?chatroomId=${chatroomId}`;
+                });
+
+
+            });
+        }
+
+        //친구요청 버튼 클릭이벤트
+        document.getElementById('friendRequest-btn').addEventListener('click', function (){
+            let friendMemberId = document.getElementById('userInfo').getAttribute('data-member-id');
+            let myId = sessionStorage.getItem('userId');
+            sendFriendRequest(myId,friendMemberId).then(async response =>{
+                if(response){
+                    document.getElementById('friendRequest-btn').style.display = 'none';
+                    /*document.getElementById('friendRequest-btn-cancel').style.display = 'block';*/
+                    let friendRequestState = await friendRequestCheck(myId,friendMemId)
+                    renderFriendRequestByUser(friendRequestState);
+                }
+            });
+
+        });
+
+        //요청취소 버튼 클릭이벤트
+        document.getElementById('friendRequest-btn-cancel').addEventListener('click',async function(){
+            let friendRequestId = document.getElementById('friendReq-btns').getAttribute('data-friendReq-id');
+            friendRequestRefuse(friendRequestId).then(async response=>{
+                if(response){
+                    let friendRequestState = await friendRequestCheck(myId,friendMemId)
+                    renderFriendRequestByUser(friendRequestState);
+                    document.getElementById('friendRequest-btn-cancel').style.display = 'none';
+                    /*document.getElementById('friendRequest-btn').style.display = 'block';*/
+                }
+            });
+        });
+
+        //요청수락 버튼 클릭이벤트
+        document.getElementById('friendRequest-btn-accept').addEventListener('click', async function(){
+            let friendRequestId = document.getElementById('friendReq-btns').getAttribute('data-friendReq-id');
+            let response = await friendRequestAccept(friendRequestId)
+            if(response){
+                let friendRequestState = await friendRequestCheck(myId,friendMemId)
+                renderFriendRequestByUser(friendRequestState);
+                document.getElementById('friendRequestIng').style.display = 'none';
+                document.getElementById('friendRequestIng-btn').style.display = 'none';
+                let userData = await loadUserInfo(nickname);
+                renderUserInfo(userData);
+                /*document.getElementById('friend-btn').style.display = 'block';*/
+                let friends = await getFriends();
+                document.getElementById('friendMain').replaceChildren();
+                renderFriendList(friends);
+            }
+        });
+
+        //요청거절 버튼 클릭이벤트
+        document.getElementById('friendRequest-btn-refuse').addEventListener('click',function (){
+            let friendRequestId = document.getElementById('friendReq-btns').getAttribute('data-friendReq-id');
+            friendRequestRefuse(friendRequestId).then(async response => {
+                if(response){
+                    let friendRequestState = await friendRequestCheck(myId,friendMemId)
+                    renderFriendRequestByUser(friendRequestState);
+                    document.getElementById('friendRequestIng').style.display = 'none';
+                    document.getElementById('friendRequestIng-btn').style.display = 'none';
+                    /*document.getElementById('friendRequest-btn').style.display = 'block';*/
+                }
+            })
+        });
+
+        //친구 버튼 클릭이벤트(친구 삭제 확인 알림)
+        document.getElementById('friend-btn').addEventListener('click',async function (){
+            if (confirm("정말 친구를 삭제하시겠습니까?")) {
+                // 예 클릭한 경우 실행
+                let friendMemberId = document.getElementById('userInfo').getAttribute('data-member-id');
+                let response = await deleteFriend(friendMemberId);
+                if(response){
+                    alert("친구를 삭제하였습니다.");
+                    document.getElementById('friend-btn').style.display = 'none';
+                    /*document.getElementById('friendRequest-btn').style.display = 'block';*/
+                    let friendRequestState = await friendRequestCheck(myId,friendMemId)
+                    renderFriendRequestByUser(friendRequestState);
+                    let userData = await loadUserInfo(nickname);
+                    renderUserInfo(userData);
+                    let friends = await getFriends();
+                    document.getElementById('friendMain').replaceChildren();
+                    renderFriendList(friends);
+                }
+            }
+        });
+
+        //프로필 편집 버튼 클릭이벤트
+        document.getElementById('profileEdit').addEventListener('click',function(){
+            window.location.href = `${BASE_URL}/member/profile/edit`;
+
+        })
+
+
+    </script>
+</th:block>
+</body>
+</html>
