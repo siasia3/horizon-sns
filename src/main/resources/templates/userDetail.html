@@ -134,7 +134,7 @@
                 let chatroomId;
                 getChatroom(myId,receiverId).then(chatroom => {
                     chatroomId = chatroom.chatroomId;
-                    window.location.href = `/chat/${nickname}?chatroomId=${chatroomId}`;
+                    window.location.href = `${BASE_URL}/chat/${nickname}?chatroomId=${chatroomId}`;
                 });
 
 

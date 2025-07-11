@@ -74,13 +74,14 @@ document.getElementById('postBtn').addEventListener('click', async (event) => {
     try {
         const options = {
             method: 'POST',
-            body: formData,
+            body: formData
         };
 
 
         const result = await fetchWithAuth('/api/post',options);
         console.log('게시글 업로드 성공:', result);
         document.getElementById('writeModal').classList.remove('show');
+        resetWriteModal();
         alert('게시물이 성공적으로 업로드되었습니다.');
 
 
@@ -344,6 +345,14 @@ function createPostInfo(template,post){
     }
 }
 
+//게시글 등록시 글 등록 modal 비워주는 함수
+function resetWriteModal(){
+    document.getElementById('postContent').value = "";
+    document.getElementById('fileInput').value = "";
+    document.getElementById('carouselItems').replaceChildren();
+    document.getElementById('prevButton').style.display = 'none';
+    document.getElementById('nextButton').style.display = 'none';
+}
 
 /*//스크롤시 post 페이징 api 불러오기
 window.addEventListener("scroll", () => {

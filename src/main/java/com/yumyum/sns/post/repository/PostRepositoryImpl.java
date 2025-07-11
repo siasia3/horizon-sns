@@ -4,7 +4,6 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yumyum.sns.comment.entity.QComment;
 import com.yumyum.sns.post.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +53,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(post.likesList, likes)
                 .leftJoin(post.commentList, comment)
                 .groupBy(post.id)
+                .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .fetch();
@@ -102,9 +102,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(post.likesList, likes)
                 .leftJoin(post.commentList, comment)
                 .where(post.member.id.eq(memberId))
+                .groupBy(post.id)
+                .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .groupBy(post.id)
                 .fetch();
         return memberPosts;
     }

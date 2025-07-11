@@ -86,7 +86,7 @@ function handleApiError(error){
         window.location.href = `${BASE_URL}/error/500`;
     } else if (error.status === 401) {
         // 토큰 만료 또는 인증되지 않은 사용자
-        window.location.href = "/login";
+        window.location.href = `${BASE_URL}/login`;
     } else {
         // 그 외 400번대;
         alert("잘못된 요청을 보내셨습니다.");

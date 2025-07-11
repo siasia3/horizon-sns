@@ -26,6 +26,8 @@ public class S3Service {
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
+    @Value("${spring.cloud.aws.cloudfront.domain}")
+    private String cloudFrontDomain;
     private final S3Operations s3Operations;
 
 
@@ -40,9 +42,9 @@ public class S3Service {
                     throw new IllegalArgumentException("업로드된 파일 중 빈 파일이 존재합니다.");
                 }
                 fileName = file.getOriginalFilename();
-                String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
+                String uniqueFileName = "media/"+UUID.randomUUID().toString() + "_" + fileName;
                 S3Resource upload = s3Operations.upload(bucket, uniqueFileName, file.getInputStream());
-                String url = upload.getURL().toString();
+                String url = cloudFrontDomain + "/" + uniqueFileName;
                 AttachDto attachDto = new AttachDto(file, uniqueFileName, url);
                 attachDtos.add(attachDto);
             }
@@ -74,10 +76,10 @@ public class S3Service {
             throw new IllegalArgumentException("업로드된 파일 중 빈 파일이 존재합니다.");
         }
         String fileName = file.getOriginalFilename();
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
+        String uniqueFileName = "media/"+UUID.randomUUID().toString() + "_" + fileName;
         try {
             S3Resource upload = s3Operations.upload(bucket, uniqueFileName, file.getInputStream());
-            return upload.getURL().toString();
+            return cloudFrontDomain + "/" + uniqueFileName;
         } catch (IOException e) {
             throw new FileUploadException("파일 업로드 실패: "+ fileName);
         } catch (S3Exception e){

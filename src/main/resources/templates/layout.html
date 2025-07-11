@@ -116,13 +116,13 @@
         if (preview) {
             let nickname = preview.querySelector('.previewNickName').textContent;
             console.log(nickname);
-            window.location.href = `/user/${nickname}`;
+            window.location.href = `${BASE_URL}/user/${nickname}`;
         }
     });
 
     //친구요청 페이지
     document.getElementById('friendPage').addEventListener('click',function (){
-        window.location.href = '/friendRequest';
+        window.location.href = `${BASE_URL}/friendRequest`;
     });
 
     //검색내용을 지운 경우 UI 지우기
