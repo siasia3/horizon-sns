@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost'
+const BASE_URL = 'http://localhost';
 
 async function refreshAccessToken() {
     try {
@@ -23,7 +23,27 @@ async function refreshAccessToken() {
     }
 }
 
+async function logout() {
+    try {
+        const response = await fetch(`${BASE_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include', // 쿠키 사용 시 필요
+        });
 
+        if (response.ok) {
+            sessionStorage.removeItem("nickname");
+            sessionStorage.removeItem("profileImage");
+            sessionStorage.removeItem("userId");
+            window.location.href = `${BASE_URL}/start`;
+
+        }else {
+            alert('잠시 후 다시 시도해주세요.');
+        }
+
+    } catch (error) {
+        alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+}
 
 async function fetchWithAuth(endpoint, options = {}) {
     try {

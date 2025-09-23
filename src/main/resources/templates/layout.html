@@ -125,6 +125,11 @@
         window.location.href = `${BASE_URL}/friendRequest`;
     });
 
+    //로그아웃 클릭
+    document.getElementById('logout').addEventListener('click',function (){
+        logout();
+    });
+
     //검색내용을 지운 경우 UI 지우기
     document.getElementById('mySearch').addEventListener('input',function (){
         if (this.value.trim() === "") {

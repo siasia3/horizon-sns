@@ -3,6 +3,7 @@ package com.yumyum.sns.oauthjwt.oauth2;
 
 import com.yumyum.sns.oauthjwt.dto.CustomOAuth2User;
 import com.yumyum.sns.oauthjwt.jwt.JWTUtil;
+import com.yumyum.sns.oauthjwt.service.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import java.util.Iterator;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
+    private final TokenService tokenService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -37,7 +39,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = auth.getAuthority();
 
         String accessToken = jwtUtil.createJwt(username, role, 60*60*1000L);
-        String refreshToken = jwtUtil.createRefreshToken(username,60*60*60*1000L);
+        String refreshToken = jwtUtil.createRefreshToken(username,3*60*60*1000L);
+        tokenService.saveRefreshToken(username,refreshToken,3*60*60*1000L);
 
         response.addCookie(jwtUtil.createCookie("Authorization", accessToken));
         response.addCookie(jwtUtil.createCookie("refreshToken", refreshToken));
