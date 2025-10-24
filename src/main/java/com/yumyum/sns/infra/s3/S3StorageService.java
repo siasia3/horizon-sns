@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class StorageService implements com.yumyum.sns.infra.StorageService {
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
@@ -32,6 +32,7 @@ public class S3Service {
 
 
     //s3 다중파일 저장
+    @Override
     public List<AttachDto> uploadFiles(List<MultipartFile> files) {
         List<AttachDto> attachDtos = new ArrayList<>();
         String fileName = "";
@@ -60,6 +61,7 @@ public class S3Service {
     }
 
     //s3 다중파일 삭제
+    @Override
     public void deleteFiles(List<String> fileNames){
         try {
             fileNames.stream()
@@ -71,6 +73,7 @@ public class S3Service {
     }
 
     //s3 단일파일 저장
+    @Override
     public String uploadFile(MultipartFile file){
         if (file.isEmpty()) {
             throw new IllegalArgumentException("업로드된 파일 중 빈 파일이 존재합니다.");
@@ -90,6 +93,7 @@ public class S3Service {
 
 
     //s3 단일파일 삭제
+    @Override
     public void deleteFile(String fileName){
         try{
             s3Operations.deleteObject(bucket,fileName);
@@ -101,6 +105,7 @@ public class S3Service {
     }
 
     //List<dto> -> List<String> 파일들의 저장된 경로 반환
+    @Override
     public List<String> toSavedFileNames(List<AttachDto> attachDtos){
         return attachDtos.stream().map(AttachDto::getSavedFileName).collect(Collectors.toList());
     }
