@@ -17,13 +17,19 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # 2. 빌드 실행
+    # 2. application.yml 생성
+    - name: Create application.yml
+      run : |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+
+    # 3. 빌드 실행
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew clean build -x test
 
-    # 3. 서버로 JAR 파일 전송 (SCP)
+    # 4. 서버로 JAR 파일 전송 (SCP)
     - name: Copy JAR to Server
       uses: appleboy/scp-action@master
       with:
@@ -34,7 +40,7 @@ jobs:
         target: "/home/ubuntu/app"
         strip_components: 2
 
-    # 4. 서버에서 구 버전 끄고 신규 버전 실행 (SSH)
+    # 5. 서버에서 구 버전 끄고 신규 버전 실행 (SSH)
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
