@@ -87,64 +87,13 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 캐싱 등
 ---
 
 ## 🏗 아키텍처
-```mermaid
-graph TB
-    subgraph Client["🖥️ Client (Browser)"]
-        HTML["Thymeleaf Templates"]
-        JS["JavaScript (STOMP/WebSocket)"]
-    end
-
-    subgraph Server["☕ Spring Boot Server"]
-        subgraph Security["Security Layer"]
-            JWT["JWT / OAuth2"]
-            SC["Spring Security"]
-        end
-
-        subgraph Controllers["Controllers"]
-            MC["Member"]
-            PC["Post / Likes"]
-            CC["Comment"]
-            FC["Friend"]
-            CH["Chat (REST)"]
-            WS["Chat (WebSocket)"]
-        end
-
-        subgraph Services["Service Layer"]
-            MS["MemberService"]
-            PS["PostFacadeService"]
-            CS["CommentService"]
-            FS["FriendService"]
-            CHS["ChatService"]
-        end
-
-        subgraph Infra["Storage Infra"]
-            S3["AWS S3"]
-            OCI["OCI Object Storage"]
-        end
-
-        AOP["AOP (ExecutionTime)"]
-    end
-
-    subgraph DB["🗄️ Database"]
-        MySQL["MySQL (JPA + QueryDSL)"]
-        Redis["Redis (Token Cache)"]
-    end
-
-    Client -->|HTTP/REST| Controllers
-    JS -->|WebSocket/STOMP| WS
-    Controllers --> Services
-    Services --> MySQL
-    Services --> Redis
-    Services --> Infra
-    Security --> Controllers
-```
+<img width="968" height="658" alt="image" src="https://github.com/user-attachments/assets/1628b0d5-94f6-4d4d-b8cd-ad4c5cac1fcf" />
 
 ---
 
 ## 📊 ERD
 
 <img width="945" height="567" alt="snserd" src="https://github.com/user-attachments/assets/64810d25-598b-4f88-8d56-9db71389d388" />
-
 
 ---
 
