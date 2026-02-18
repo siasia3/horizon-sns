@@ -6,7 +6,7 @@
 
 친구들과 소통하고, 실시간으로 채팅할 수 있는 SNS 서비스입니다.
 OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 캐싱 등 
-실무 수준의 백엔드 기술을 적용한 학습 프로젝트입니다.
+백엔드 기술을 적용한 학습 프로젝트입니다.
 
 ### 🔗 Links
 - **Demo:** https://horizonsns.com 
@@ -87,24 +87,64 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 캐싱 등
 ---
 
 ## 🏗 아키텍처
-```
-[사용자]
-   ↓ HTTPS
-[도메인 (yourdomain.com)]
-   ↓
-[nginx :443]
-   ↓ 리버스 프록시
-[Spring Boot :8080]
-   ├─ MySQL (게시글, 사용자 데이터)
-   ├─ Redis (세션, 캐시)
-   └─ AWS S3 / OCI (파일 스토리지)
+```mermaid
+graph TB
+    subgraph Client["🖥️ Client (Browser)"]
+        HTML["Thymeleaf Templates"]
+        JS["JavaScript (STOMP/WebSocket)"]
+    end
+
+    subgraph Server["☕ Spring Boot Server"]
+        subgraph Security["Security Layer"]
+            JWT["JWT / OAuth2"]
+            SC["Spring Security"]
+        end
+
+        subgraph Controllers["Controllers"]
+            MC["Member"]
+            PC["Post / Likes"]
+            CC["Comment"]
+            FC["Friend"]
+            CH["Chat (REST)"]
+            WS["Chat (WebSocket)"]
+        end
+
+        subgraph Services["Service Layer"]
+            MS["MemberService"]
+            PS["PostFacadeService"]
+            CS["CommentService"]
+            FS["FriendService"]
+            CHS["ChatService"]
+        end
+
+        subgraph Infra["Storage Infra"]
+            S3["AWS S3"]
+            OCI["OCI Object Storage"]
+        end
+
+        AOP["AOP (ExecutionTime)"]
+    end
+
+    subgraph DB["🗄️ Database"]
+        MySQL["MySQL (JPA + QueryDSL)"]
+        Redis["Redis (Token Cache)"]
+    end
+
+    Client -->|HTTP/REST| Controllers
+    JS -->|WebSocket/STOMP| WS
+    Controllers --> Services
+    Services --> MySQL
+    Services --> Redis
+    Services --> Infra
+    Security --> Controllers
 ```
 
 ---
 
 ## 📊 ERD
 
-(ERD 이미지 추가 - draw.io나 ERDCloud 사용)
+<img width="945" height="567" alt="snserd" src="https://github.com/user-attachments/assets/64810d25-598b-4f88-8d56-9db71389d388" />
+
 
 ---
 
