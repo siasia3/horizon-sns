@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yumyum.sns.post.dto.*;
+import com.yumyum.sns.post.entity.QLikes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -31,6 +32,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     @Override
     public List<PostResponseDTO> findPagingPosts(PostCursorRequest cursor,Long memberId) {
 
+        QLikes likesSub = new QLikes("likesSub");
+
         BooleanExpression cursorCondition = null;
         LocalDateTime cursorCreatedAt = cursor.getCursorCreatedAt();
         Long cursorPostId = cursor.getCursorPostId();
@@ -52,23 +55,27 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         attachment.id,
                         post.content,
                         post.createdAt,
-                        likes.id.countDistinct().as("likeCount"),
-                        comment.id.countDistinct().as("commentCount"),
-                        ExpressionUtils.as(
-                                JPAExpressions.select(likes.id)
-                                        .from(likes)
-                                        .where(likes.member.id.eq(memberId)
-                                        .and(likes.post.id.eq(post.id))),
-                                    "likedByMember"
-                        )
+                        JPAExpressions
+                                .select(likes.id.count())
+                                .from(likes)
+                                .where(likes.post.id.eq(post.id)),
+                        JPAExpressions
+                                .select(comment.id.count())
+                                .from(comment)
+                                .where(comment.post.id.eq(post.id)),
+                        JPAExpressions
+                                .select(likesSub.id)
+                                .from(likesSub)
+                                .where(
+                                        likesSub.post.id.eq(post.id),
+                                        likesSub.member.id.eq(memberId)
+                                )
+                                .limit(1)
                 ))
                 .from(post)
                 .join(post.member, member)
                 .join(post.attachment,attachment)
-                .leftJoin(post.likesList, likes)
-                .leftJoin(post.commentList, comment)
                 .where(cursorCondition)
-                .groupBy(post.id)
                 .orderBy(post.createdAt.desc())
                 .limit(cursor.getSize()+1)
                 .fetch();

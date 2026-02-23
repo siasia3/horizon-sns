@@ -20,6 +20,12 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(
+        name = "member",
+        indexes = {
+                @Index(name = "idx_member_nickname", columnList = "nickname")
+        }
+)
 public class Member {
 
     @Id

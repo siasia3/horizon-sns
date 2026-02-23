@@ -51,7 +51,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     public List<Member> getPreviewByNickname(String keyword) {
         return queryFactory
                 .selectFrom(member)
-                .where(member.nickname.startsWithIgnoreCase(keyword))
+                .where(member.nickname.startsWith(keyword))
                 .orderBy(member.nickname.asc())
                 .limit(3)
                 .fetch();
