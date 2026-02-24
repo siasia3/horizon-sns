@@ -34,16 +34,18 @@ function renderUserInfo(userData){
     }
     document.getElementById('userInfo').setAttribute('data-member-id',userData.memberId);
     let userId = sessionStorage.getItem('userId');
+
+    document.querySelector('.profileName').textContent = userData.nickName;
+    document.getElementById('friendName').textContent = userData.nickName;
+    document.querySelector('.postCnt').textContent = userData.postCnt;
+    document.querySelector('.friendCnt').textContent = userData.friendCnt;
+
     if(userId==userData.memberId){
         document.querySelector('.myProfileBtn').style.display = 'block';
     }
     if(userId!=userData.memberId){
         document.querySelector('.userProfileBtn').style.display = 'flex';
     }
-    document.querySelector('.profileName').textContent = userData.nickName;
-    document.getElementById('friendName').textContent = userData.nickName;
-    document.querySelector('.postCnt').textContent = userData.postCnt;
-    document.querySelector('.friendCnt').textContent = userData.friendCnt;
 }
 
 //회원게시글 렌더링

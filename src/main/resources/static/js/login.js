@@ -54,13 +54,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 에러 메시지 표시 함수
-    function showError(message) {
-        if (errorMessage) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-        } else {
-            alert(message);
-        }
-    }
 });
+
+// 에러 메시지 표시 함수
+function showError(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+    } else {
+        alert(message);
+    }
+}
+
+function demoLogin() {
+    document.getElementById('username').value = 'demo';
+    document.getElementById('password').value = 'demo1234';
+
+    const userId = 'demo';
+    const password = 'demo1234';
+
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            userId: userId,
+            password: password
+        })
+    }).then(response => {
+        if (response.ok) {
+            window.location.href = '/main';
+        } else {
+            showError('시연용 계정 로그인에 실패했습니다.');
+        }
+    }).catch(error => {
+        showError('서버와의 연결에 실패했습니다.');
+    });
+}
+

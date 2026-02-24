@@ -13,7 +13,7 @@
                         </div>
                         <div id="userInfo" style="width: 55%; padding-top: 20px;" data-member-id="">
                             <div class="rowDiv alignCenter small-pb-custom">
-                                <div class="large-pr-custom customLargeBoldFont profileName">냠냠냠</div>
+                                <div class="large-pr-custom customLargeBoldFont profileName"></div>
                                 <div class="profileBtn">
                                     <div class="myProfileBtn" style="display: none;">
                                         <div class="custom-btn large-mr-custom profileEdit" id="profileEdit">프로필 편집</div>
@@ -78,6 +78,7 @@
                         </div>
                     </div>
                 </div>
+                <div id="post-sentinel"></div>
             </div>
 
             <div th:replace="~{modal/postDetailModal :: postDetailModal}"></div>
@@ -122,16 +123,28 @@
             renderFriendRequestByUser(friendRequestState);
             let userPost = await pagingUserPosts(nickname);
             renderUserPosts(userPost);
+            observer.observe(sentinel);
         });
 
-        window.addEventListener("scroll", async () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-                let userPost = await pagingUserPosts(nickname);
-                if (userPost.content.length > 0) {
-                    renderUserPosts(userPost);
+        const sentinel = document.getElementById("post-sentinel");
+
+        const observer = new IntersectionObserver(
+            async (entries) => {
+                if (entries[0].isIntersecting) {
+                    let userPost = await pagingUserPosts(nickname);
+                    if (userPost.content.length > 0) {
+                        renderUserPosts(userPost);
+                    }
                 }
+            },
+            {
+                root: null,
+                rootMargin: "300px",
+                threshold: 0
             }
-        });
+        );
+
+
 
         if(DMButton){
             DMButton.addEventListener('click',function (){
