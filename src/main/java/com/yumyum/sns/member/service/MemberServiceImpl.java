@@ -1,10 +1,9 @@
 package com.yumyum.sns.member.service;
 
-import com.yumyum.sns.error.exception.DuplicateException;
 import com.yumyum.sns.error.exception.DuplicateNicknameException;
 import com.yumyum.sns.error.exception.DuplicateUserIdException;
 import com.yumyum.sns.error.exception.MemberNotFoundException;
-import com.yumyum.sns.infra.s3.S3StorageService;
+import com.yumyum.sns.infra.StorageService;
 import com.yumyum.sns.member.dto.*;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.member.repository.MemberRepository;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
-    private final S3StorageService s3StorageService;
+    private final StorageService storageService;
     private final PasswordEncoder passwordEncoder;
 
     //회원 pk로 회원 확인
@@ -129,7 +128,7 @@ public class MemberServiceImpl implements MemberService{
         MultipartFile profileFile = memberEditDto.getMemberProfileFile();
         if(profileFile != null && !profileFile.isEmpty()) {
             if(profileFile.getContentType().startsWith("image/")) {
-                String savedProfilePath = s3StorageService.uploadFile(memberEditDto.getMemberProfileFile());
+                String savedProfilePath = storageService.uploadFile(memberEditDto.getMemberProfileFile());
                 memberEditDto.setMemberProfilePath(savedProfilePath);
             }else{
                 //파일이 존재하는데 이미지 파일이 아니라면 예외

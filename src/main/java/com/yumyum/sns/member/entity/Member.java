@@ -66,7 +66,7 @@ public class Member {
     private String email;
     @Column(length = 20)
     private String nickname;
-    @Column(length = 100)
+    @Column(length = 500)
     private String profileImage;
     @Column(length = 10)
     private String gender;
