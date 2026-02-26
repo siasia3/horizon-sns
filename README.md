@@ -5,7 +5,7 @@
 ## 📌 프로젝트 소개
 
 친구들과 소통하고, 실시간으로 채팅할 수 있는 SNS 서비스입니다.
-OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 캐싱 등 
+OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등 
 백엔드 기술을 적용한 학습 프로젝트입니다.
 
 ### 🔗 Links
@@ -18,7 +18,7 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 캐싱 등
 - **ORM:** JPA, QueryDSL
 - **Auth:** Spring Security, JWT, OAuth2 (Google, Naver)
 - **Real-time:** WebSocket
-- **Cache:** Redis
+- **Token Store:** Redis
 - **Build:** Gradle
 
 ### Frontend
@@ -68,7 +68,6 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 캐싱 등
 ### 성능 최적화
 - **N+1 문제 해결:** QueryDSL Fetch Join 활용
 - **페이징 최적화:** 커서 기반 페이징으로 대용량 데이터 처리
-- **캐싱:** Redis를 활용한 세션 관리 및 응답 속도 개선
 
 ### 보안
 - **OAuth2 소셜 로그인:** Google, Naver 연동
