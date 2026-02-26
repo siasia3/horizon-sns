@@ -790,6 +790,11 @@ span.fa-comment {
     justify-content: flex-end;
 }
 
+.profileImg {
+    height: 225px;
+    object-fit: cover;
+}
+
 .memberPost{
     position: relative;
     width: 32.7%;
