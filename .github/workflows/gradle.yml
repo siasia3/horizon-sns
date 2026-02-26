@@ -3,6 +3,8 @@ name: Java CI/CD with Gradle
 on:
   push:
     branches: [ "master" ] # 본인의 메인 브랜치 이름 확인 (main 또는 master)
+    paths-ignore:
+      - 'README.md'
 
 jobs:
   build-and-deploy:
@@ -51,4 +53,4 @@ jobs:
           # 8080 포트를 점유 중인 기존 프로세스 종료
           sudo fuser -k 8080/tcp || true
           # 새 JAR 실행 (백그라운드에서 로그 남기며 실행)
-          nohup java -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/nohup.out 2>&1 &
+          nohup java -Xmx256m -Xms256m -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/nohup.out 2>&1 &
