@@ -11,6 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "likes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"POST_ID", "MEMBER_ID"})
+})
 public class Likes extends BaseTimeEntity {
 
     @Id
