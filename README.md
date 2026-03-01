@@ -93,8 +93,7 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등
 ---
 
 ## 📊 ERD
-
-<img width="945" height="567" alt="snserd" src="https://github.com/user-attachments/assets/64810d25-598b-4f88-8d56-9db71389d388" />
+<img width="1303" height="798" alt="snserd" src="https://github.com/user-attachments/assets/41f9080d-e122-40ce-b2ef-670c51bc4669" />
 
 ---
 
