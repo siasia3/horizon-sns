@@ -5,6 +5,7 @@ import com.yumyum.sns.comment.entity.Comment;
 import com.yumyum.sns.friend.entity.Friend;
 import com.yumyum.sns.friend.entity.FriendRequest;
 import com.yumyum.sns.member.dto.MemberEditDto;
+import com.yumyum.sns.notification.entity.Notification;
 import com.yumyum.sns.post.entity.Likes;
 import com.yumyum.sns.post.entity.Post;
 import jakarta.persistence.*;
@@ -32,11 +33,19 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "member")
-    private List<Chat> chatList = new ArrayList<>();
+    @OneToMany(mappedBy = "memberA")
+    private List<Friend> friendsA = new ArrayList<>();
+
+    @OneToMany(mappedBy = "memberB")
+    private List<Friend> friendsB = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Post> postList = new ArrayList<>();
+
+    /*@OneToMany(mappedBy = "member")
+    private List<Chat> chatList = new ArrayList<>();
+
+
 
     @OneToMany(mappedBy = "member")
     private List<Likes> likesList = new ArrayList<>();
@@ -47,14 +56,10 @@ public class Member {
     @OneToMany(mappedBy = "receiver")
     private List<FriendRequest> receivedRequests = new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberA")
-    private List<Friend> friendsA = new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberB")
-    private List<Friend> friendsB = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Comment> commentList = new ArrayList<>();
+    private List<Comment> commentList = new ArrayList<>();*/
 
     @Column(length = 30)
     private String userId;

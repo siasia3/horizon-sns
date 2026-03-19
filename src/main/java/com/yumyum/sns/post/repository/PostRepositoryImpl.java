@@ -79,7 +79,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .join(post.member, member)
                 .join(post.attachment,attachment)
                 .where(cursorCondition)
-                .orderBy(post.createdAt.desc())
+                .orderBy(post.createdAt.desc(), post.id.desc())
                 .limit(cursor.getSize()+1)
                 .fetch();
         return postList;

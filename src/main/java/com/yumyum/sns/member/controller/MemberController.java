@@ -78,7 +78,6 @@ public class MemberController {
         MultipartFile file = memberEditDto.getMemberProfileFile();
         if (file != null && !file.isEmpty()) {
             String contentType = file.getContentType();
-            System.out.println("contentType = " + contentType);
             if (!contentType.startsWith("image/")) {
                 return ResponseEntity.badRequest().body(Map.of("message", "이미지 파일만 업로드 가능합니다."));
             }

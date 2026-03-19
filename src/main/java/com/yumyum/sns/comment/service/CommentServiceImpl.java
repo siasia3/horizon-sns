@@ -6,9 +6,13 @@ import com.yumyum.sns.comment.repository.CommentRepository;
 import com.yumyum.sns.error.exception.CommentNotFoundException;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.member.service.MemberService;
+import com.yumyum.sns.notification.NotificationType;
+import com.yumyum.sns.notification.TargetType;
+import com.yumyum.sns.notification.event.NotificationEvent;
 import com.yumyum.sns.post.entity.Post;
 import com.yumyum.sns.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +28,7 @@ public class CommentServiceImpl implements CommentService{
     private final MemberService memberService;
     private final PostService postService;
     private final CommentRepository commentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     //댓글 등록
@@ -38,6 +43,28 @@ public class CommentServiceImpl implements CommentService{
         if(parentId != null){
             Comment parentComment = commentRepository.findById(commentRequestDto.getParentId()).orElseThrow(() -> new CommentNotFoundException(parentId));
             comment.setParentId(parentComment);
+
+            //대댓글 알림
+            if (!parentComment.getMember().getId().equals(member.getId())) {
+                eventPublisher.publishEvent(new NotificationEvent(
+                        parentComment.getMember().getId(),
+                        member.getId(),
+                        NotificationType.REPLY,
+                        TargetType.COMMENT,
+                        parentComment.getId()
+                ));
+            }
+        }else{
+            //댓글 알림
+            if (!post.getMember().getId().equals(member.getId())) {
+                eventPublisher.publishEvent(new NotificationEvent(
+                        post.getMember().getId(),
+                        member.getId(),
+                        NotificationType.COMMENT,
+                        TargetType.POST,
+                        post.getId()
+                ));
+            }
         }
         Comment savedComment = commentRepository.save(comment);
 
