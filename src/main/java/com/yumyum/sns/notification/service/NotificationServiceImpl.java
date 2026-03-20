@@ -34,7 +34,7 @@ public class NotificationServiceImpl implements NotificationService{
         Member sender = memberService.getMemberById(event.senderId());
 
         Notification notification = new Notification(
-                receiver, sender,
+                sender, receiver,
                 event.notiType(), event.targetType(), event.targetId()
         );
 

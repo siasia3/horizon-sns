@@ -205,50 +205,51 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     //회원이 작성한 게시글 조회
     @Override
     public List<MemberPostDto> findMemberPosts(Pageable pageable, Long memberId) {
-        List<MemberPostDto> memberPosts = queryFactory
+        return queryFactory
                 .select(new QMemberPostDto(
                         post.id,
                         post.thumbnailPath,
-                        likes.id.countDistinct().as("likeCount"),
-                        comment.id.countDistinct().as("commentCount")
+                        JPAExpressions.select(likes.id.count())
+                                .from(likes)
+                                .where(likes.post.id.eq(post.id)),
+                        JPAExpressions.select(comment.id.count())
+                                .from(comment)
+                                .where(comment.post.id.eq(post.id))
                 ))
                 .from(post)
-                .leftJoin(post.likesList, likes)
-                .leftJoin(post.commentList, comment)
                 .where(post.member.id.eq(memberId))
-                .groupBy(post.id)
                 .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
-        return memberPosts;
     }
 
     //회원이 좋아요를 누른 게시글 조회
-    @Override
     public List<LikedPostDto> findLikedPosts(int pageSize, LocalDateTime cursorCreatedAt, Long memberId) {
 
-        List<LikedPostDto> likedPosts = queryFactory
+        QLikes likes2 = new QLikes("likes2");
+
+        return queryFactory
                 .select(new QLikedPostDto(
                         post.id,
                         post.thumbnailPath,
-                        likes.id.countDistinct().as("likeCount"),
-                        comment.id.countDistinct().as("commentCount"),
+                        JPAExpressions.select(likes2.id.count())
+                                .from(likes2)
+                                .where(likes2.post.id.eq(post.id)),
+                        JPAExpressions.select(comment.id.count())
+                                .from(comment)
+                                .where(comment.post.id.eq(post.id)),
                         likes.createdAt
                 ))
-                .from(post)
-                .leftJoin(post.likesList, likes)
-                .leftJoin(post.commentList, comment)
+                .from(likes)
+                .join(likes.post, post)
                 .where(
-                    likes.member.id.eq(memberId)
-                    .and(cursorCreatedAt != null ? likes.createdAt.lt(cursorCreatedAt) : null)
+                        likes.member.id.eq(memberId)
+                                .and(cursorCreatedAt != null ? likes.createdAt.lt(cursorCreatedAt) : null)
                 )
-                .groupBy(post.id, likes.id)
                 .orderBy(likes.createdAt.desc())
                 .limit(pageSize)
                 .fetch();
-
-        return likedPosts;
     }
 
 

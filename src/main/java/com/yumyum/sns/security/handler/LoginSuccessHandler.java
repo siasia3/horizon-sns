@@ -31,14 +31,16 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         AuthMember customUserDetails = (AuthMember) authentication.getPrincipal();
 
         String username = customUserDetails.getIdentifier();
+        Long userId = customUserDetails.getUserId();
+
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String accessToken = jwtUtil.createJwt(username, role, 30*60*1000L);
-        String refreshToken = jwtUtil.createRefreshToken(username,3*60*60*1000L);
+        String accessToken = jwtUtil.createJwt(userId,username, role, 30*60*1000L);
+        String refreshToken = jwtUtil.createRefreshToken(userId,username,3*60*60*1000L);
         tokenService.saveRefreshToken(username,refreshToken,3*60*60*1000L);
 
         response.addHeader("Set-Cookie", jwtUtil.createCookie("Authorization", accessToken).toString());

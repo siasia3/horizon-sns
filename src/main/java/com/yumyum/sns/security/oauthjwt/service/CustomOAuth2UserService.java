@@ -48,8 +48,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 nickname = generateTemporaryNickname(oAuth2Response.getProvider());
             }
             Member Member = new Member(identifier,oAuth2Response.getName(),nickname, oAuth2Response.getEmail(), "ROLE_USER");
-            memberService.createSocialMember(Member);
-            UserDTO userDTO = new UserDTO("ROLE_USER",oAuth2Response.getName(),identifier);
+            Member socialMember = memberService.createSocialMember(Member);
+            UserDTO userDTO = new UserDTO("ROLE_USER",oAuth2Response.getName(),identifier,socialMember.getId());
 
             return new CustomOAuth2User(userDTO);
         }else{
@@ -59,7 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             if(!member.getName().equals(oAuth2Response.getName()) || !member.getEmail().equals(oAuth2Response.getEmail())){
                 member.modifyPersonalInfo(oAuth2Response.getName(),oAuth2Response.getEmail());
             }
-            UserDTO userDTO = new UserDTO(member.getRole(),oAuth2Response.getName(), member.getIdentifier());
+            UserDTO userDTO = new UserDTO(member.getRole(),oAuth2Response.getName(), member.getIdentifier(),member.getId());
 
             return new CustomOAuth2User(userDTO);
         }
