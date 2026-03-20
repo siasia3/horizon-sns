@@ -29,8 +29,8 @@ public class LoginController {
 
         Member member = loginService.login(loginRequest);
 
-        String accessToken = jwtUtil.createJwt(member.getIdentifier(), member.getRole(), 30*60*1000L);
-        String refreshToken = jwtUtil.createRefreshToken(member.getIdentifier(),3*60*60*1000L);
+        String accessToken = jwtUtil.createJwt(member.getId(),member.getIdentifier(), member.getRole(), 30*60*1000L);
+        String refreshToken = jwtUtil.createRefreshToken(member.getId(),member.getIdentifier(),3*60*60*1000L);
         tokenService.saveRefreshToken(member.getIdentifier(),refreshToken,3*60*60*1000L);
 
         response.addHeader("Set-Cookie", jwtUtil.createCookie("Authorization", accessToken).toString());

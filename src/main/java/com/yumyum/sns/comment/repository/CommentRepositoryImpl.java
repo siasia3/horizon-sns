@@ -39,7 +39,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     @Override
     public List<CommentDto> findCommentsByPost(Pageable pageable,Long postId) {
 
-        QComment parent = QComment.comment;
+        //QComment parent = new QComment("parent");
         QComment child = new QComment("child"); // 대댓글 별칭
 
         List<CommentDto> comments = queryFactory
@@ -53,12 +53,11 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                         JPAExpressions
                                 .select(child.count()) // 대댓글 개수 조회
                                 .from(child)
-                                .where(child.parent.eq(parent)) // 부모 댓글과 연결된 대댓글만 조회
+                                .where(child.parent.id.eq(comment.id)) // 부모 댓글과 연결된 대댓글만 조회
                 ))
-                .from(parent)
-                .join(parent.member, member)
-                .groupBy(parent.id)
-                .where(parent.post.id.eq(postId).and(parent.parent.isNull()))
+                .from(comment)
+                .join(comment.member, member)
+                .where(comment.post.id.eq(postId).and(comment.parent.isNull()))
                 .orderBy(comment.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)

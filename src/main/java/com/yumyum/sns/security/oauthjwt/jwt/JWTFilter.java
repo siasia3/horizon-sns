@@ -93,7 +93,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             //ssr 기반 화면요청이면서 리프레쉬 유효한 경우
             if(!jwtUtil.isExpired(refreshToken)){
-                String newAccessToken = jwtUtil.createJwt(jwtUtil.getUsername(refreshToken), "ROLE_USER", 30 * 60 * 1000L);
+                String newAccessToken = jwtUtil.createJwt(Long.parseLong(jwtUtil.getUserId(refreshToken)),jwtUtil.getUsername(refreshToken), "ROLE_USER", 30 * 60 * 1000L);
                 response.addHeader("Set-Cookie", jwtUtil.createCookie("Authorization", newAccessToken).toString());
                 accessToken = newAccessToken;
             }
@@ -101,14 +101,13 @@ public class JWTFilter extends OncePerRequestFilter {
         }
         if(!jwtUtil.isExpired(accessToken)) {
             //토큰에서 identifier과 role 획득
+            Long userId = Long.parseLong(jwtUtil.getUserId(accessToken));
             String identifier = jwtUtil.getUsername(accessToken);
             String role = jwtUtil.getRole(accessToken);
 
-            //member 조회
-            Member member = memberService.getMemberByIdentifier(identifier);
 
             //UserDetails에 회원 정보 객체 담기
-            CustomUserDetails customUser = new CustomUserDetails(member);
+            CustomUserDetails customUser = new CustomUserDetails(userId,identifier,role);
 
             //스프링 시큐리티 인증 토큰 생성
             Authentication authToken = new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
