@@ -54,8 +54,9 @@ async function fetchWithAuth(endpoint, options = {}) {
             showLoadingSpinner();
         }
         const response = await fetch(`${endpoint}`, {
+            method: options.method ?? 'GET',
             ...options,
-            credentials: 'include', // 쿠키를 요청에 포함
+            credentials: 'include' // 쿠키를 요청에 포함
         });
 
         if (response.ok) {
@@ -77,7 +78,7 @@ async function fetchWithAuth(endpoint, options = {}) {
                     hideLoadingSpinner();
                     return retryResponse;
                 } else {
-                    const errorBody = await response.json();
+                    const errorBody = await retryResponse.json();
                     throw {
                         status: response.status, // 상태코드
                         body: errorBody           // 응답 메시지
@@ -96,7 +97,7 @@ async function fetchWithAuth(endpoint, options = {}) {
         }
     } catch (error) {
         if(error.status<500){
-            throw new Error(error);
+            throw new Error(error.body?.message || 'Unknown error');
         }
         window.location.href = `/error/500`;
     } finally {
