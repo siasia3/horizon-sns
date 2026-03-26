@@ -15,13 +15,14 @@ document.addEventListener('click', function (e) {
     }
 });
 
-function loadNotifications() {
-    fetchWithAuth('/api/notifications',{noSpinner: true})
-        .then(res => res.json())
-        .then(data => {
-            renderNotifications(data);
-        })
-        .catch(err => console.error('알림 로드 실패:', err));
+async function loadNotifications() {
+    try {
+        const res = await fetchWithAuth('/api/notifications', {noSpinner: true});
+        const data = await res.json();
+        renderNotifications(data);
+    } catch (err) {
+        console.error('알림 로드 실패:', err);
+    }
 }
 
 function renderNotifications(notifications) {
@@ -62,10 +63,13 @@ function renderNotifications(notifications) {
     updateBadge(unreadCount);
 }
 
-function onNotificationClick(noti) {
+async function onNotificationClick(noti) {
     if (!noti.read) {
-        fetchWithAuth(`/api/notifications/${noti.id}/read`, { noSpinner: true,method: 'PATCH' })
-            .catch(err => console.error('읽음 처리 실패:', err));
+        try {
+            await fetchWithAuth(`/api/notifications/${noti.id}/read`, { noSpinner: true, method: 'PATCH' });
+        } catch (err) {
+            console.error('읽음 처리 실패:', err);
+        }
 
         const item = document.querySelector(`.notification-item[data-id="${noti.id}"]`);
         if (item) {
@@ -80,17 +84,18 @@ function onNotificationClick(noti) {
     }
 }
 
-function markAllRead() {
-    fetchWithAuth('/api/notifications/read-all', { noSpinner: true,method: 'PATCH' })
-        .then(() => {
-            document.querySelectorAll('.notification-item.unread').forEach(item => {
-                item.classList.remove('unread');
-                const dot = item.querySelector('.notification-dot');
-                if (dot) dot.style.visibility = 'hidden';
-            });
-            updateBadge(0);
-        })
-        .catch(err => console.error('모두 읽음 실패:', err));
+async function markAllRead() {
+    try {
+        await fetchWithAuth('/api/notifications/read-all', { noSpinner: true, method: 'PATCH' });
+        document.querySelectorAll('.notification-item.unread').forEach(item => {
+            item.classList.remove('unread');
+            const dot = item.querySelector('.notification-dot');
+            if (dot) dot.style.visibility = 'hidden';
+        });
+        updateBadge(0);
+    } catch (err) {
+        console.error('모두 읽음 실패:', err);
+    }
 }
 
 function updateBadge(count) {
@@ -114,10 +119,59 @@ function formatTime(dateStr) {
     return `${Math.floor(diff / 86400)}일 전`;
 }
 
-// 페이지 로드 시 미읽음 배지 초기화
-document.addEventListener('DOMContentLoaded', function () {
-    fetchWithAuth('/api/notifications/unread-count',{noSpinner: true})
-        .then(res => res.json())
-        .then(data => updateBadge(data.count ?? data))
-        .catch(() => {});
+// SSE 연결
+function connectSSE() {
+    const eventSource = new EventSource('/api/notifications/stream');
+
+    eventSource.onmessage = function (e) {
+        const noti = JSON.parse(e.data);
+        const badge = document.getElementById('notification-badge');
+        const current = parseInt(badge.textContent) || 0;
+        updateBadge(current + 1);
+
+        // 드롭다운이 열려있으면 새 알림 즉시 추가
+        const dropdown = document.getElementById('notification-dropdown');
+        if (dropdown.style.display !== 'none') {
+            prependNotification(noti);
+        }
+    };
+
+    eventSource.onerror = function () {
+        eventSource.close();
+        // 5초 후 재연결
+        setTimeout(connectSSE, 5000);
+    };
+}
+
+function prependNotification(noti) {
+    const list = document.getElementById('notification-list');
+    const empty = list.querySelector('.notification-empty');
+    if (empty) empty.remove();
+
+    const template = document.getElementById('notification-item-template');
+    const clone = template.content.cloneNode(true);
+    const item = clone.querySelector('.notification-item');
+    const img = clone.querySelector('.notification-profile-img');
+    const message = clone.querySelector('.notification-message');
+    const time = clone.querySelector('.notification-time');
+
+    img.src = noti.senderProfileImage || '/image/basicProfile.jpg';
+    img.alt = noti.senderNickname || '';
+    message.textContent = noti.message || '';
+    time.textContent = formatTime(noti.createdAt);
+    item.dataset.id = noti.id;
+    item.addEventListener('click', () => onNotificationClick(noti));
+
+    list.prepend(clone);
+}
+
+// 페이지 로드 시 미읽음 배지 초기화 및 SSE 연결
+document.addEventListener('DOMContentLoaded', async function () {
+    try {
+        const res = await fetchWithAuth('/api/notifications/unread-count', {noSpinner: true});
+        const data = await res.json();
+        updateBadge(data.count ?? data);
+    } catch {}
+
+    connectSSE();
 });
