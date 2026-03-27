@@ -6,7 +6,7 @@ import com.yumyum.sns.notification.TargetType;
 public record NotificationEvent(
         Long receiverId,
         Long senderId,
-        NotificationType notiType,
+        NotificationType notificationType,
         TargetType targetType,
         Long targetId
 ) {}

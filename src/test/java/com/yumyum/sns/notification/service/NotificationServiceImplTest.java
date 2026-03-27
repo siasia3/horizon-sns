@@ -92,7 +92,7 @@ class NotificationServiceImplTest {
         Slice<NotificationDto> result = notificationService.getNotifications(1L, null, 20);
 
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0).getNotiType()).isEqualTo(NotificationType.LIKE);
+        assertThat(result.getContent().get(0).getNotificationType()).isEqualTo(NotificationType.LIKE);
     }
 
     @Test

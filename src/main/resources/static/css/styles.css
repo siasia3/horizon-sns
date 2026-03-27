@@ -148,7 +148,7 @@ footer{
 #notification-dropdown {
     position: absolute;
     top: calc(100% + 10px);
-    right: 0;
+    left: -30px;
     width: 320px;
     max-height: 400px;
     background: #fff;

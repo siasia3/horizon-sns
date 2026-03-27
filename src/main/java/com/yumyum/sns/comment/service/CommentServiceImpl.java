@@ -12,6 +12,7 @@ import com.yumyum.sns.notification.event.NotificationEvent;
 import com.yumyum.sns.post.entity.Post;
 import com.yumyum.sns.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentServiceImpl implements CommentService{
 
     private final MemberService memberService;
@@ -40,6 +42,13 @@ public class CommentServiceImpl implements CommentService{
         String commentContent = commentRequestDto.getCommentContent();
         Comment comment = new Comment(post,member, commentContent);
         Long parentId = commentRequestDto.getParentId();
+        Comment savedComment = commentRepository.save(comment);
+
+        log.info("게시글 작성자 ID={}, 댓글 작성자 ID={},부모 댓글 ID={}",
+                post.getMember().getId(),
+                member.getId(),
+                parentId);
+
         if(parentId != null){
             Comment parentComment = commentRepository.findById(commentRequestDto.getParentId()).orElseThrow(() -> new CommentNotFoundException(parentId));
             comment.setParentId(parentComment);
@@ -57,6 +66,7 @@ public class CommentServiceImpl implements CommentService{
         }else{
             //댓글 알림
             if (!post.getMember().getId().equals(member.getId())) {
+                log.info("=== 이벤트 발행 ===");
                 eventPublisher.publishEvent(new NotificationEvent(
                         post.getMember().getId(),
                         member.getId(),
@@ -66,7 +76,6 @@ public class CommentServiceImpl implements CommentService{
                 ));
             }
         }
-        Comment savedComment = commentRepository.save(comment);
 
         return new CommentResponseDto(member, savedComment);
     }

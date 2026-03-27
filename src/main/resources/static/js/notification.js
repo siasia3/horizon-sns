@@ -37,7 +37,7 @@ function renderNotifications(notifications) {
     }
 
     let unreadCount = 0;
-    notifications.forEach(noti => {
+    notifications.content.forEach(noti => {
         const clone = template.content.cloneNode(true);
         const item = clone.querySelector('.notification-item');
         const img = clone.querySelector('.notification-profile-img');
@@ -55,7 +55,7 @@ function renderNotifications(notifications) {
         message.textContent = noti.message || '';
         time.textContent = formatTime(noti.createdAt);
 
-        item.dataset.id = noti.id;
+        item.dataset.id = noti.notificationId;
         item.addEventListener('click', () => onNotificationClick(noti));
         list.appendChild(clone);
     });
@@ -66,12 +66,12 @@ function renderNotifications(notifications) {
 async function onNotificationClick(noti) {
     if (!noti.read) {
         try {
-            await fetchWithAuth(`/api/notifications/${noti.id}/read`, { noSpinner: true, method: 'PATCH' });
+            await fetchWithAuth(`/api/notifications/${noti.notificationId}/read`, { noSpinner: true, method: 'PATCH' });
         } catch (err) {
             console.error('읽음 처리 실패:', err);
         }
 
-        const item = document.querySelector(`.notification-item[data-id="${noti.id}"]`);
+        const item = document.querySelector(`.notification-item[data-id="${noti.notificationId}"]`);
         if (item) {
             item.classList.remove('unread');
             const dot = item.querySelector('.notification-dot');

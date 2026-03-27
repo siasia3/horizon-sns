@@ -1,5 +1,6 @@
 package com.yumyum.sns.notification.entity;
 
+import com.yumyum.sns.common.BaseTimeEntity;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.notification.NotificationType;
 import com.yumyum.sns.notification.TargetType;
@@ -16,8 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class Notification {
+public class Notification extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private NotificationType notiType;
+    private NotificationType notificationType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -53,13 +53,10 @@ public class Notification {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    public Notification(Member sender, Member receiver, NotificationType notiType, TargetType targetType, Long targetId) {
+    public Notification(Member sender, Member receiver, NotificationType notificationType, TargetType targetType, Long targetId) {
         this.sender = sender;
         this.receiver = receiver;
-        this.notiType = notiType;
+        this.notificationType = notificationType;
         this.targetType = targetType;
         this.targetId = targetId;
     }

@@ -35,7 +35,7 @@ public class NotificationServiceImpl implements NotificationService{
 
         Notification notification = new Notification(
                 sender, receiver,
-                event.notiType(), event.targetType(), event.targetId()
+                event.notificationType(), event.targetType(), event.targetId()
         );
 
         try {

@@ -16,7 +16,7 @@ public class NotificationDto {
     private Long senderId;
     private String senderNickname;
     private String senderProfileImage;
-    private NotificationType notiType;
+    private NotificationType notificationType;
     private TargetType targetType;
     private Long targetId;
     private boolean isRead;
@@ -28,7 +28,7 @@ public class NotificationDto {
                 .senderId(notification.getSender().getId())
                 .senderNickname(notification.getSender().getNickname())
                 .senderProfileImage(notification.getSender().getProfileImage())
-                .notiType(notification.getNotiType())
+                .notificationType(notification.getNotificationType())
                 .targetType(notification.getTargetType())
                 .targetId(notification.getTargetId())
                 .isRead(notification.isRead())
