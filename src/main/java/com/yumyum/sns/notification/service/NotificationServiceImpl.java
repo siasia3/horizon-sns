@@ -1,5 +1,7 @@
 package com.yumyum.sns.notification.service;
 
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.member.service.MemberService;
 import com.yumyum.sns.notification.event.NotificationEvent;
@@ -77,5 +79,24 @@ public class NotificationServiceImpl implements NotificationService{
     @Transactional
     public void markAllAsRead(Long receiverId) {
         notificationRepository.markAllAsRead(receiverId);
+    }
+
+    // 전체 알림 삭제 상태로 변경
+    @Override
+    @Transactional
+    public void deleteAllNotifications(Long receiverId) {
+        notificationRepository.deleteAllNotifications(receiverId);
+    }
+
+    // 단일 알림 삭제 상태로 변경
+    @Override
+    @Transactional
+    public void deleteNotification(Long notificationId, Long receiverId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOTIFICATION_NOT_FOUND));
+        if (!notification.getReceiver().getId().equals(receiverId)) {
+            throw new BusinessException(ErrorCode.NOTIFICATION_DELETE_FORBIDDEN);
+        }
+        notification.markAsDeleted();
     }
 }

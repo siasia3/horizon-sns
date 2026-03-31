@@ -26,4 +26,10 @@ public interface NotificationCustom {
      * @param receiverId 수신자 pk
      */
     void markAllAsRead(Long receiverId);
+
+    /**
+     * 전체 삭제 처리
+     * @param receiverId 수신자 pk
+     */
+    void deleteAllNotifications(Long receiverId);
 }

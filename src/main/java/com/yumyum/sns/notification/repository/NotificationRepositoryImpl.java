@@ -49,6 +49,15 @@ public class NotificationRepositoryImpl implements NotificationCustom{
         return unreadNotificationCnt != null ? unreadNotificationCnt : 0L;
     }
 
+    //알림 전부 삭제 상태로 변경
+    @Override
+    public void deleteAllNotifications(Long receiverId) {
+        queryFactory.update(notification)
+                .set(notification.isDeleted, true)
+                .where(receiverIdEq(receiverId), isDeleted())
+                .execute();
+    }
+
     //알림 전부 읽음 상태로 변경
     @Override
     public void markAllAsRead(Long receiverId) {

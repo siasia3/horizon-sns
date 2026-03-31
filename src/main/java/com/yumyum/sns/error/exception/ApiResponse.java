@@ -21,7 +21,7 @@ public class ApiResponse<T> {
     }
 
     // 실패 응답
-    public static ApiResponse<Void> failure(String message) {
+    public static ApiResponse<Void> fail(String message) {
         return new ApiResponse<>(false, message, null);
     }
 }

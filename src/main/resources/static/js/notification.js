@@ -57,6 +57,13 @@ function renderNotifications(notifications) {
 
         item.dataset.id = noti.notificationId;
         item.addEventListener('click', () => onNotificationClick(noti));
+
+        const deleteBtn = clone.querySelector('.notification-delete-btn');
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteNotification(noti.notificationId);
+        });
+
         list.appendChild(clone);
     });
 
@@ -81,6 +88,38 @@ async function onNotificationClick(noti) {
         const badge = document.getElementById('notification-badge');
         const current = parseInt(badge.textContent) || 0;
         updateBadge(Math.max(0, current - 1));
+    }
+}
+
+async function deleteNotification(notificationId) {
+    try {
+        await fetchWithAuth(`/api/notifications/${notificationId}`, { noSpinner: true, method: 'DELETE' });
+        const item = document.querySelector(`.notification-item[data-id="${notificationId}"]`);
+        if (item) {
+            if (item.classList.contains('unread')) {
+                const badge = document.getElementById('notification-badge');
+                const current = parseInt(badge.textContent) || 0;
+                updateBadge(Math.max(0, current - 1));
+            }
+            item.remove();
+        }
+        const list = document.getElementById('notification-list');
+        if (list.querySelectorAll('.notification-item').length === 0) {
+            list.innerHTML = '<div class="notification-empty">알림이 없습니다</div>';
+        }
+    } catch (err) {
+        console.error('알림 삭제 실패:', err);
+    }
+}
+
+async function deleteAllNotifications() {
+    try {
+        await fetchWithAuth('/api/notifications', { noSpinner: true, method: 'DELETE' });
+        const list = document.getElementById('notification-list');
+        list.innerHTML = '<div class="notification-empty">알림이 없습니다</div>';
+        updateBadge(0);
+    } catch (err) {
+        console.error('전체 알림 삭제 실패:', err);
     }
 }
 
@@ -123,7 +162,7 @@ function formatTime(dateStr) {
 function connectSSE() {
     const eventSource = new EventSource('/api/notifications/stream');
 
-    eventSource.onmessage = function (e) {
+    eventSource.addEventListener('notification', function (e) {
         const noti = JSON.parse(e.data);
         const badge = document.getElementById('notification-badge');
         const current = parseInt(badge.textContent) || 0;
@@ -134,7 +173,7 @@ function connectSSE() {
         if (dropdown.style.display !== 'none') {
             prependNotification(noti);
         }
-    };
+    });
 
     eventSource.onerror = function () {
         eventSource.close();

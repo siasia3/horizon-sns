@@ -23,7 +23,6 @@ public class Notification extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", nullable = false)
     private Member receiver;
@@ -64,5 +63,9 @@ public class Notification extends BaseTimeEntity {
     public void markAsRead() {
         this.isRead = true;
         this.readAt = LocalDateTime.now();
+    }
+
+    public void markAsDeleted() {
+        this.isDeleted = true;
     }
 }

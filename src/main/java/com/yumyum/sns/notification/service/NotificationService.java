@@ -39,4 +39,17 @@ public interface NotificationService {
      * @param receiverId 수신자
      */
     public void markAllAsRead(Long receiverId);
+
+    /**
+     * 단일 알림 삭제 상태 변경
+     * @param notificationId 알림 pk
+     * @param receiverId 수신자 pk (본인 알림만 삭제 가능)
+     */
+    public void deleteNotification(Long notificationId, Long receiverId);
+
+    /**
+     * 전체 알림 삭제 상태 변경
+     * @param receiverId 수신자 pk
+     */
+    public void deleteAllNotifications(Long receiverId);
 }

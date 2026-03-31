@@ -1,6 +1,8 @@
 package com.yumyum.sns.error.handler;
 
 import com.yumyum.sns.error.exception.*;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,6 +72,14 @@ public class ApiControllerAdvice {
         log.warn("DuplicateException: ", e);
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(ApiResponse.fail(e.getMessage()));
     }
 
 }

@@ -49,7 +49,10 @@
             <div id="notification-dropdown" style="display: none;">
                 <div class="notification-header">
                     <span>알림</span>
-                    <button id="notification-read-all" onclick="markAllRead()">모두 읽음</button>
+                    <div class="notification-header-actions">
+                        <button id="notification-read-all" onclick="markAllRead()">모두 읽음</button>
+                        <button id="notification-delete-all" onclick="deleteAllNotifications()">전체 삭제</button>
+                    </div>
                 </div>
                 <div id="notification-list">
                     <div class="notification-empty">알림이 없습니다</div>
@@ -62,6 +65,7 @@
                             <span class="notification-time"></span>
                         </div>
                         <div class="notification-dot"></div>
+                        <button class="notification-delete-btn" title="삭제">✕</button>
                     </div>
                 </template>
             </div>

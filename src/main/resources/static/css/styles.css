@@ -254,6 +254,44 @@ footer{
     visibility: hidden;
 }
 
+.notification-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+#notification-delete-all {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #e0245e;
+    cursor: pointer;
+    padding: 0;
+}
+
+#notification-delete-all:hover {
+    text-decoration: underline;
+}
+
+.notification-delete-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 0 0 8px;
+    line-height: 1;
+    flex-shrink: 0;
+    visibility: hidden;
+}
+
+.notification-item:hover .notification-delete-btn {
+    visibility: visible;
+}
+
+.notification-delete-btn:hover {
+    color: #e0245e;
+}
+
 #header-left{
     text-align: center;
     width: 20%;

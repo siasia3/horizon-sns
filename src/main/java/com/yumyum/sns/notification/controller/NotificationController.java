@@ -54,4 +54,20 @@ public class NotificationController {
         notificationService.markAllAsRead(authMember.getUserId());
         return ResponseEntity.ok().build();
     }
+
+    // 전체 알림 삭제 처리
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllNotifications(@AuthenticationPrincipal AuthMember authMember) {
+        notificationService.deleteAllNotifications(authMember.getUserId());
+        return ResponseEntity.noContent().build();
+    }
+
+    // 개별 알림 삭제 처리
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<Void> deleteNotification(
+            @PathVariable Long notificationId,
+            @AuthenticationPrincipal AuthMember authMember) {
+        notificationService.deleteNotification(notificationId, authMember.getUserId());
+        return ResponseEntity.noContent().build();
+    }
 }
