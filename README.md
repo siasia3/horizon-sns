@@ -85,6 +85,10 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등
 - **WebSocket:** STOMP 프로토콜 활용
 - **메시지 브로커:** Spring Messaging
 
+### 실시간 알림
+- **SSE(Server-Sent Events):** 폴링 방식 대신 단방향 스트림 채택 → 불필요한 HTTP 요청 제거
+- **이벤트 기반 알림 발행:** `ApplicationEventPublisher` 활용 → 도메인 로직과 알림 로직 결합도 분리
+
 ### 인프라 자동화
 - **CI/CD:** GitHub Actions 파이프라인
 - **무중단 배포:** nginx 리버스 프록시
