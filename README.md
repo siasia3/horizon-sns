@@ -6,7 +6,7 @@
 
 친구들과 소통하고, 실시간으로 채팅할 수 있는 SNS 서비스입니다.
 OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등 
-백엔드 기술을 적용한 학습 프로젝트입니다.
+백엔드 기술을 적용한 프로젝트입니다.
 
 ### 🔗 Links
 - **Demo:** https://horizonsns.com 
@@ -61,6 +61,11 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등
 ### 5. 실시간 채팅
 - 1:1 채팅
 - WebSocket 기반 실시간 통신
+
+### 6. 실시간 알림
+- SSE(Server-Sent Events) 기반 실시간 알림 수신
+- 댓글 / 대댓글 알림
+- 읽음 처리 / 전체 읽음 / 알림 삭제
 
 ---
 
