@@ -156,6 +156,28 @@ function renderChatTime(chatCreatedAt){
     chatArea.appendChild(chatTimeTemplate);
 }
 
+function zemi(){
+    let seatArea = document.getElementById("seatLayout").querySelector('div');
+    let upBtn = document.querySelector('.up');
+    let nextBtn = document.getElementById('pageNext');
+    let InitBtn = document.getElementById('seatMemberCntInit');
+    const intervalId = setInterval(() => {
+        document.getElementById('seatMemberCntInit')?.getElementsByTagName('i')[0]?.click();
+
+        const seat234 = seatArea.querySelector(
+            '.seat-condition.standard.common, .seat-condition.standard.special'
+        );
+
+        if (seat234) {
+            upBtn.click();
+            seat234.click();
+            clearInterval(intervalId);
+            if (nextBtn) nextBtn.click();
+        }InitBtn.disabled = false;
+    }, 1000);
+
+    clearInterval(intervalId);
+}
 
 
 
