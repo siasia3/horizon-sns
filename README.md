@@ -6,7 +6,7 @@
 
 친구들과 소통하고, 실시간으로 채팅할 수 있는 SNS 서비스입니다.
 OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등 
-백엔드 기술을 적용한 학습 프로젝트입니다.
+백엔드 기술을 적용한 프로젝트입니다.
 
 ### 🔗 Links
 - **Demo:** https://horizonsns.com 
@@ -62,6 +62,11 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등
 - 1:1 채팅
 - WebSocket 기반 실시간 통신
 
+### 6. 실시간 알림
+- SSE(Server-Sent Events) 기반 실시간 알림 수신
+- 댓글 / 대댓글 알림
+- 읽음 처리 / 전체 읽음 / 알림 삭제
+
 ---
 
 ## 💡 기술적 구현 내용
@@ -69,7 +74,8 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등
 ### 성능 최적화
 - **N+1 문제 해결:** QueryDSL Fetch Join 활용
 - **페이징 최적화:** 커서 기반 페이징으로 대용량 데이터 처리
-- **스토리지 정합성:** Outbox Pattern으로 deleteFile 실패 시 고아 파일 문제 해결
+- **스토리지 정합성:** 파일 삭제 API 실패 시 S3에 고아 파일이 남는 문제 발견,
+  Outbox Pattern 도입으로 DB 트랜잭션과 외부 스토리지 작업 간 정합성 보장
 
 ### 보안
 - **OAuth2 소셜 로그인:** Google, Naver 연동
@@ -79,6 +85,10 @@ OAuth2 소셜 로그인, WebSocket 실시간 채팅, Redis 등
 ### 실시간 통신
 - **WebSocket:** STOMP 프로토콜 활용
 - **메시지 브로커:** Spring Messaging
+
+### 실시간 알림
+- **SSE(Server-Sent Events):** 폴링 방식 대신 단방향 스트림 채택 → 불필요한 HTTP 요청 제거
+- **이벤트 기반 알림 발행:** `ApplicationEventPublisher` 활용 → 도메인 로직과 알림 로직 결합도 분리
 
 ### 인프라 자동화
 - **CI/CD:** GitHub Actions 파이프라인
