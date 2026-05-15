@@ -1,6 +1,7 @@
 package com.yumyum.sns.friend.service;
 
-import com.yumyum.sns.error.exception.FriendRequestNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.friend.dto.FriendRequestResDto;
 import com.yumyum.sns.friend.dto.ReceivedFriendRequestDto;
 import com.yumyum.sns.friend.dto.SentFriendRequestDto;
@@ -69,7 +70,7 @@ public class FriendRequestServiceImpl implements FriendRequestService{
     @Override
     @Transactional(readOnly = true)
     public FriendRequest getFriendRequestById(Long friendRequestId) {
-        return friendRequestRepository.findById(friendRequestId).orElseThrow((() -> new FriendRequestNotFoundException(friendRequestId)));
+        return friendRequestRepository.findById(friendRequestId).orElseThrow(() -> new BusinessException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
     }
 
     //친구요청 상태 확인

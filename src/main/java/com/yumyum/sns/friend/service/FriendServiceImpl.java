@@ -1,6 +1,7 @@
 package com.yumyum.sns.friend.service;
 
-import com.yumyum.sns.error.exception.FriendNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.friend.dto.FriendResDto;
 import com.yumyum.sns.friend.entity.Friend;
 import com.yumyum.sns.friend.repository.FriendRepository;
@@ -55,14 +56,11 @@ public class FriendServiceImpl implements FriendService{
     }
 
 
-
-
-
     // 친구 단건 조회
     @Override
     @Transactional(readOnly = true)
     public Friend getFriendById(Long friendId) {
-        return friendRepository.findById(friendId).orElseThrow(()-> new FriendNotFoundException(friendId));
+        return friendRepository.findById(friendId).orElseThrow(() -> new BusinessException(ErrorCode.FRIEND_NOT_FOUND));
     }
 
 

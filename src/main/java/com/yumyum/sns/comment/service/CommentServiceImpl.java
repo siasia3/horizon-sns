@@ -3,7 +3,8 @@ package com.yumyum.sns.comment.service;
 import com.yumyum.sns.comment.dto.*;
 import com.yumyum.sns.comment.entity.Comment;
 import com.yumyum.sns.comment.repository.CommentRepository;
-import com.yumyum.sns.error.exception.CommentNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.member.service.MemberService;
 import com.yumyum.sns.notification.NotificationType;
@@ -50,7 +51,7 @@ public class CommentServiceImpl implements CommentService{
                 parentId);
 
         if(parentId != null){
-            Comment parentComment = commentRepository.findById(commentRequestDto.getParentId()).orElseThrow(() -> new CommentNotFoundException(parentId));
+            Comment parentComment = commentRepository.findById(commentRequestDto.getParentId()).orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
             comment.setParentId(parentComment);
 
             //대댓글 알림
@@ -101,10 +102,10 @@ public class CommentServiceImpl implements CommentService{
     @Override
     @Transactional
     public Long deleteComment(Long commentId, String identifier) {
-        Comment comment = commentRepository.findByIdWithMember(commentId).orElseThrow(() -> new CommentNotFoundException(commentId));
+        Comment comment = commentRepository.findByIdWithMember(commentId).orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
         Member member = memberService.getMemberByIdentifier(identifier);
         if(comment.getMember().getId() != member.getId()){
-            throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
         }
         commentRepository.delete(comment);
         return comment.getId();
@@ -117,7 +118,7 @@ public class CommentServiceImpl implements CommentService{
         List<ReplyDto> replies = commentRepository.findRepliesByComment(pageable, parentId);
 
         if (replies.isEmpty()) {
-            throw new CommentNotFoundException("해당 parentId를 가진 부모댓글이 존재하지 않습니다. " + parentId);
+            throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
         }
         return new ReplySliceDto(replies,pageable);
     }

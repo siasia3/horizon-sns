@@ -188,7 +188,7 @@ async function deleteComment(commentId){
             return responseData;
         }
     }catch(error){
-        if(error.status == 400){
+        if(error.status == 403){
             alert("삭제권한이 없습니다");
         }else{
             alert("잠시 후 다시 시도해주세요.");

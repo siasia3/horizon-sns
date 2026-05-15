@@ -6,7 +6,8 @@ import com.yumyum.sns.chat.dto.ChatRoomResponse;
 import com.yumyum.sns.chat.entity.ChatRoom;
 import com.yumyum.sns.chat.entity.ChatRoomType;
 import com.yumyum.sns.chat.repository.ChatRoomRepository;
-import com.yumyum.sns.error.exception.ChatRoomNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     @Transactional(readOnly = true)
     public ChatRoom checkChatRoom(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new ChatRoomNotFoundException(chatRoomId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND));
     }
 
     //채팅방 목록 조회

@@ -1,6 +1,10 @@
 package com.yumyum.sns.error.handler;
 
-import com.yumyum.sns.error.exception.*;
+import com.yumyum.sns.error.exception.ApiResponse;
+import com.yumyum.sns.error.exception.FileUploadException;
+import com.yumyum.sns.error.exception.InvalidLoginException;
+import com.yumyum.sns.error.exception.OCIUploadException;
+import com.yumyum.sns.error.exception.S3UploadException;
 import com.yumyum.sns.error.exception.custom.BusinessException;
 import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +19,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class ApiControllerAdvice {
 
-    @ExceptionHandler(BaseNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNotFoundException(BaseNotFoundException e) {
-        log.error("NotFoundException: ", e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(ApiResponse.fail(e.getMessage()));
     }
 
     @ExceptionHandler(InvalidLoginException.class)
@@ -30,7 +36,6 @@ public class ApiControllerAdvice {
     @ExceptionHandler(FileUploadException.class)
     public ResponseEntity<Map<String, String>> handleFileUploadException(FileUploadException e) {
         log.error("FileUploadException: ", e);
-        // 파일 이름을 메시지에 포함
         String errorMessage = "파일 업로드 중 오류가 발생했습니다: " + e.getMessage();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", errorMessage));
@@ -39,7 +44,6 @@ public class ApiControllerAdvice {
     @ExceptionHandler(S3UploadException.class)
     public ResponseEntity<Map<String, String>> handleS3UploadException(S3UploadException e) {
         log.error("S3UploadException: ", e);
-        // 파일 이름을 메시지에 포함
         String errorMessage = "파일 업로드 중 오류가 발생했습니다: " + e.getMessage();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message",errorMessage));
@@ -48,7 +52,6 @@ public class ApiControllerAdvice {
     @ExceptionHandler(OCIUploadException.class)
     public ResponseEntity<Map<String, String>> handleOCIUploadException(OCIUploadException e) {
         log.error("OCIUploadException: ", e);
-        // 파일 이름을 메시지에 포함
         String errorMessage = "파일 업로드 중 오류가 발생했습니다: " + e.getMessage();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message",errorMessage));
@@ -65,21 +68,6 @@ public class ApiControllerAdvice {
         log.error("RuntimeException: ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<String> handleDuplicate(DuplicateException e) {
-        log.warn("DuplicateException: ", e);
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        return ResponseEntity
-                .status(errorCode.getStatus())
-                .body(ApiResponse.fail(e.getMessage()));
     }
 
 }

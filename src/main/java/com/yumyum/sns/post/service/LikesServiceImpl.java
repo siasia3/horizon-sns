@@ -1,6 +1,7 @@
 package com.yumyum.sns.post.service;
 
-import com.yumyum.sns.error.exception.LikeNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.member.service.MemberService;
 import com.yumyum.sns.post.dto.LikeDto;
@@ -32,7 +33,7 @@ public class LikesServiceImpl implements LikesService {
     //좋아요 삭제
     @Override
     public void deleteLike(Long likeId) {
-        Likes like = likesRepository.findById(likeId).orElseThrow(() -> new LikeNotFoundException(likeId));
+        Likes like = likesRepository.findById(likeId).orElseThrow(() -> new BusinessException(ErrorCode.LIKE_NOT_FOUND));
         likesRepository.delete(like);
     }
 }

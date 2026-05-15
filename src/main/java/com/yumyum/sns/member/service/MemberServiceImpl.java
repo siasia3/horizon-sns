@@ -1,8 +1,7 @@
 package com.yumyum.sns.member.service;
 
-import com.yumyum.sns.error.exception.DuplicateNicknameException;
-import com.yumyum.sns.error.exception.DuplicateUserIdException;
-import com.yumyum.sns.error.exception.MemberNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.infra.StorageService;
 import com.yumyum.sns.member.dto.*;
 import com.yumyum.sns.member.entity.Member;
@@ -37,21 +36,21 @@ public class MemberServiceImpl implements MemberService{
     @Override
     @Transactional(readOnly = true)
     public Member getMemberByIdentifier(String identifier) {
-        return memberRepository.findByIdentifier(identifier).orElseThrow(() -> new MemberNotFoundException(identifier + " 식별자를 가진 회원이 존재하지 않습니다"));
+        return memberRepository.findByIdentifier(identifier).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     //회원 pk로 회원 조회
     @Override
     @Transactional(readOnly = true)
     public Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId + " id를 가진 회원이 존재하지 않습니다"));
+        return memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     //닉네임 회원 조회
     @Override
     @Transactional(readOnly = true)
     public Member getMemberByNickname(String nickname) {
-        return memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberNotFoundException(nickname + " 닉네임을 가진 회원이 존재하지 않습니다."));
+        return memberRepository.findByNickname(nickname).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     //닉네임 중복 확인
@@ -85,11 +84,11 @@ public class MemberServiceImpl implements MemberService{
     public Member createLocalMember(SignupDTO signupDTO) {
 
         if(checkNicknameDuplicate(signupDTO.getNickname())){
-            throw new DuplicateNicknameException();
+            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
         if(checkUserIdDuplicate(signupDTO.getUserId())){
-            throw new DuplicateUserIdException();
+            throw new BusinessException(ErrorCode.DUPLICATE_USER_ID);
         }
 
         Member member = signupDTO.toEntity();
@@ -109,7 +108,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     @Transactional(readOnly = true)
     public MemberSearchDto getSearchMember(String nickName) {
-        return memberRepository.findMemberSearch(nickName).orElseThrow(()-> new MemberNotFoundException(nickName + " 닉네임을 가진 회원이 존재하지 않습니다."));
+        return memberRepository.findMemberSearch(nickName).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     //닉네임을 통해 회원 미리보기 조회
@@ -127,7 +126,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     @Transactional(readOnly = true)
     public MemberEditDto getMemberEditInfo(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId + " id를 가진 회원이 존재하지 않습니다"));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         return MemberEditDto.toDto(member);
     }
 

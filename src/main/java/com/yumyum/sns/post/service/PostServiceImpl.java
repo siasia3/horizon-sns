@@ -4,7 +4,8 @@ package com.yumyum.sns.post.service;
 import com.yumyum.sns.attachment.dto.AttachwithDetailDto;
 import com.yumyum.sns.attachment.dto.ThumbnailResponse;
 import com.yumyum.sns.attachment.service.AttachmentService;
-import com.yumyum.sns.error.exception.PostNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.member.entity.Member;
 import com.yumyum.sns.member.service.MemberService;
 import com.yumyum.sns.post.dto.*;
@@ -43,7 +44,7 @@ public class PostServiceImpl implements PostService{
     @Transactional(readOnly = true)
     public Post getPostById(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 
     //게시글 수정
@@ -67,14 +68,14 @@ public class PostServiceImpl implements PostService{
 
         return post;
     }
-    
+
     //게시글 삭제
     @Override
     public void deletePost(Long postId,String identifier) {
         Member member = memberService.getMemberByIdentifier(identifier);
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         if(!post.getMember().getId().equals(member.getId())){
            throw new AccessDeniedException("게시글 작성자가 아닙니다. memberId: "+ member.getId());
@@ -85,7 +86,7 @@ public class PostServiceImpl implements PostService{
         postRepository.delete(post);
     }
 
-    
+
     //게시글 목록 조회
     @Override
     @Transactional(readOnly = true)
@@ -100,7 +101,7 @@ public class PostServiceImpl implements PostService{
     public PostDetailDto getPostDetail(Long postId, Long memberId) {
 
         return Optional.ofNullable(postRepository.findPostDetail(postId, memberId))
-                .orElseThrow(() -> new PostNotFoundException(postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 
     //회원이 작성한 게시글 조회
@@ -138,7 +139,7 @@ public class PostServiceImpl implements PostService{
     @Override
     @Transactional(readOnly = true)
     public PostDTO getPost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         List<AttachwithDetailDto> attachment = attachmentService.getAttachmentByPostDetail(postId);
 
         return new PostDTO(post,attachment);

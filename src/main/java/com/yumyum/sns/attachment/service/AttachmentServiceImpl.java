@@ -7,7 +7,8 @@ import com.yumyum.sns.attachment.entity.Attachment;
 import com.yumyum.sns.attachment.entity.AttachmentDetail;
 import com.yumyum.sns.attachment.repository.AttachmentDetailRepository;
 import com.yumyum.sns.attachment.repository.AttachmentRepository;
-import com.yumyum.sns.error.exception.AttachmentNotFoundException;
+import com.yumyum.sns.error.exception.custom.BusinessException;
+import com.yumyum.sns.error.exception.errorcode.ErrorCode;
 import com.yumyum.sns.infra.RollbackManager;
 import com.yumyum.sns.infra.StorageService;
 import com.yumyum.sns.infra.service.StorageDeleteOutboxService;
@@ -64,7 +65,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     public List<AttachwithDetailDto> getAttachmentByPostDetail(Long postId) {
         List<AttachwithDetailDto> attachment = attachmentRepository.findAttachmentByPostDetail(postId);
         if (attachment.isEmpty()) {
-            throw new AttachmentNotFoundException("해당 게시글의 첨부파일을 조회하지 못했습니다.");
+            throw new BusinessException(ErrorCode.ATTACHMENT_NOT_FOUND);
         }
         return attachment;
     }
@@ -75,7 +76,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     public void deleteAttachmentDetail(Long attachmentId) {
         List<AttachmentDetail> attachments = attachmentDetailRepository.findByAttachmentId(attachmentId);
         if(attachments.isEmpty()){
-            throw new AttachmentNotFoundException("잘못된 첨부파일 ID: " + attachmentId);
+            throw new BusinessException(ErrorCode.ATTACHMENT_NOT_FOUND);
         }
 
         for (AttachmentDetail attachment : attachments) {
@@ -92,7 +93,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     public ThumbnailResponse updateAttachment(Long attachmentId, List<MultipartFile> files) {
 
         Attachment attachment = attachmentRepository.findById(attachmentId)
-                .orElseThrow(() -> new AttachmentNotFoundException("잘못된 첨부파일 ID: " + attachmentId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ATTACHMENT_NOT_FOUND));
 
         //storage 업로드
         List<AttachDto> attachDtos = storageService.uploadFiles(files);
